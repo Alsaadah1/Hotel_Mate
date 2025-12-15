@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import PublicNavbar from "../components/PublicNavbar";
 const Register = () => {
   const navigate = useNavigate();
 
@@ -104,6 +104,8 @@ const Register = () => {
   };
 
   return (
+     <>
+      <PublicNavbar />
     <div className="register-page">
       <div className="register-overlay" />
 
@@ -301,31 +303,31 @@ const Register = () => {
       {/* Scoped CSS – blue & white to match new Login theme + BG.JPG */}
       <style>{`
         :root {
-          /* Blue hotel theme */
-          --blue-deep: #0a3d91;
-          --blue-primary: #1e5fe0;
-          --blue-soft: #e8f1ff;
-          --blue-mid: #2563eb;
-          --blue-dark: #102a43;
+          /* Brown & Gold luxury hotel theme */
+  --blue-deep: #5a3a1a;        
+  --blue-primary: #c9a24d;    
+  --blue-soft: #f7f1e6;       
+  --blue-mid: #8b6a2f;        
+  --blue-dark: #e6c87a;     
 
-          --bg-page: #f3f6fb;
-          --bg-overlay: linear-gradient(
-            135deg,
-            rgba(255, 255, 255, 0.75),
-            rgba(232, 241, 255, 0.9)
-          );
+  --bg-page: #fbf8f3;
+  --bg-overlay: linear-gradient(
+    135deg,
+    rgba(255, 250, 235, 0.8),
+    rgba(247, 241, 230, 0.95)
+  );
 
-          --text-main: #0b1a33;
-          --text-muted: #4b5563;
-          --text-subtle: #6b7280;
+  --text-main: #3d2a14;
+  --text-muted: #6b5a3c;
+  --text-subtle: #8c7a55;
 
-          --card-bg: #ffffff;
-          --card-border: rgba(15, 23, 42, 0.06);
+  --card-bg: #ffffff;
+  --card-border: rgba(90, 58, 26, 0.18);
 
-          --input-border: rgba(15, 23, 42, 0.18);
-          --input-bg: #ffffff;
-          --ring: rgba(37, 99, 235, 0.35);
-        }
+  --input-border: rgba(139, 106, 47, 0.35);
+  --input-bg: #ffffff;
+  --ring: rgba(201, 162, 77, 0.45);
+}
 
         .register-page {
           position: relative;
@@ -368,8 +370,8 @@ const Register = () => {
           padding: 26px 26px 28px;
           border: 1px solid rgba(15, 23, 42, 0.06);
           background:
-            radial-gradient(circle at top left, rgba(37, 99, 235, 0.15), transparent 55%),
-            radial-gradient(circle at bottom right, rgba(56, 189, 248, 0.18), transparent 60%),
+            radial-gradient(circle at top left, rgba(235, 172, 37, 0.15), transparent 55%),
+            radial-gradient(circle at bottom right, rgba(248, 197, 56, 0.18), transparent 60%),
             linear-gradient(145deg, #ffffff, #e8f1ff);
           box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
           display: flex;
@@ -415,7 +417,7 @@ const Register = () => {
           font-size: 0.8rem;
           font-weight: 600;
           background: rgba(37, 99, 235, 0.06);
-          border: 1px solid rgba(37, 99, 235, 0.4);
+          border: 1px solid rgba(241, 203, 108, 0.58);
           color: var(--blue-deep);
         }
 
@@ -436,7 +438,7 @@ const Register = () => {
           width: 100%;
           max-width: 420px;
           background:
-            radial-gradient(circle at top, rgba(59, 130, 246, 0.10), transparent 55%),
+            radial-gradient(circle at top, rgba(246, 162, 59, 0.1), transparent 55%),
             linear-gradient(145deg, #ffffff, #f5f7ff);
           border-radius: 24px;
           padding: 26px 26px 24px;
@@ -490,7 +492,7 @@ const Register = () => {
         }
 
         .register-input::placeholder {
-          color: rgba(148, 163, 184, 0.9);
+          color: rgba(184, 179, 148, 0.9);
         }
 
         .register-input:focus {
@@ -624,6 +626,7 @@ const Register = () => {
         }
       `}</style>
     </div>
+    </>
   );
 };
 

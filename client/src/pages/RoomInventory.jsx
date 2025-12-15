@@ -1,9 +1,9 @@
 // src/pages/RoomInventory.jsx
 
-import React, { useState, useEffect } from 'react';
-import Navbar from '../components/Navbar';
-import Swal from 'sweetalert2';
-import { useSelector } from 'react-redux';
+import React, { useState, useEffect } from "react";
+import Navbar from "../components/Navbar"; // ✅ ALWAYS use your Navbar.jsx from now on
+import Swal from "sweetalert2";
+import { useSelector } from "react-redux";
 
 const RoomInventory = () => {
   const [rooms, setRooms] = useState([]);
@@ -12,37 +12,33 @@ const RoomInventory = () => {
   const [currentRoom, setCurrentRoom] = useState(null);
 
   const [newRoom, setNewRoom] = useState({
-    title: '',
-    nightlyRate: '',
-    capacity: '',       // 🔹 room capacity
-    summary: '',
+    title: "",
+    nightlyRate: "",
+    capacity: "",
+    summary: "",
     imageFile: null,
   });
 
   const user = useSelector((state) => state.users.user);
   const API_URL = process.env.REACT_APP_SERVER_URL;
 
-  const isManagerLike =
-    user && (user.role === 'owner' || user.role === 'staff'); // ✅ owner OR staff
+  const isManagerLike = user && (user.role === "owner" || user.role === "staff");
 
   useEffect(() => {
-    if (isManagerLike) {
-      fetchRooms();
-    }
+    if (isManagerLike) fetchRooms();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
-const fetchRooms = async () => {
-  try {
-    // 🔹 Fetch ALL rooms (no filter by managerId)
-    const res = await fetch(`${API_URL}/api/rooms`);
-    const data = await res.json();
-    setRooms(Array.isArray(data) ? data : []);
-  } catch (error) {
-    console.error('Error fetching rooms:', error);
-  }
-};
-
+  const fetchRooms = async () => {
+    try {
+      // 🔹 Fetch ALL rooms (no filter by managerId)
+      const res = await fetch(`${API_URL}/api/rooms`);
+      const data = await res.json();
+      setRooms(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error("Error fetching rooms:", error);
+    }
+  };
 
   const handleEdit = (room) => {
     setCurrentRoom(room);
@@ -51,30 +47,28 @@ const fetchRooms = async () => {
 
   const handleDelete = async (id) => {
     const result = await Swal.fire({
-      title: 'Delete this room?',
-      text: 'This room will no longer be bookable by guests.',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#1e5fe0', // blue
-      cancelButtonColor: '#6b7280',
-      confirmButtonText: 'Yes, delete it',
+      title: "Delete this room?",
+      text: "This room will no longer be bookable by guests.",
+      icon: "warning",
+      showCancelButton: true, // ✅ fixed (was duplicated)
+      confirmButtonColor: "#d4af37",
+      cancelButtonColor: "#7a4a2e",
+      confirmButtonText: "Yes, delete it",
     });
 
     if (result.isConfirmed) {
       try {
-        const res = await fetch(`${API_URL}/api/rooms/${id}`, {
-          method: 'DELETE',
-        });
+        const res = await fetch(`${API_URL}/api/rooms/${id}`, { method: "DELETE" });
         const data = await res.json();
         if (res.ok) {
-          Swal.fire('Deleted', 'Room removed from inventory.', 'success');
+          Swal.fire("Deleted", "Room removed from inventory.", "success");
           fetchRooms();
         } else {
-          Swal.fire('Error', data.message || 'Error deleting room', 'error');
+          Swal.fire("Error", data.message || "Error deleting room", "error");
         }
       } catch (error) {
-        console.error('Error deleting room:', error);
-        Swal.fire('Error', 'Error deleting room', 'error');
+        console.error("Error deleting room:", error);
+        Swal.fire("Error", "Error deleting room", "error");
       }
     }
   };
@@ -83,27 +77,27 @@ const fetchRooms = async () => {
     e.preventDefault();
     try {
       const res = await fetch(`${API_URL}/api/rooms/${currentRoom._id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title: currentRoom.title,
           nightlyRate: currentRoom.nightlyRate,
           summary: currentRoom.summary,
-          capacity: currentRoom.capacity, // 🔹 send capacity in update
+          capacity: currentRoom.capacity,
         }),
       });
 
       const data = await res.json();
       if (res.ok) {
-        Swal.fire('Updated', 'Room details saved successfully.', 'success');
+        Swal.fire("Updated", "Room details saved successfully.", "success");
         setEditModalOpen(false);
         fetchRooms();
       } else {
-        Swal.fire('Error', data.message || 'Error updating room', 'error');
+        Swal.fire("Error", data.message || "Error updating room", "error");
       }
     } catch (error) {
-      console.error('Error updating room:', error);
-      Swal.fire('Error', 'Error updating room', 'error');
+      console.error("Error updating room:", error);
+      Swal.fire("Error", "Error updating room", "error");
     }
   };
 
@@ -114,46 +108,46 @@ const fetchRooms = async () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!newRoom.imageFile) {
-      Swal.fire('Missing image', 'Please upload a room photo.', 'warning');
+      Swal.fire("Missing image", "Please upload a room photo.", "warning");
       return;
     }
 
     try {
       const formData = new FormData();
-      formData.append('title', newRoom.title);
-      formData.append('nightlyRate', newRoom.nightlyRate);
-      formData.append('summary', newRoom.summary);
-      formData.append('capacity', newRoom.capacity); // 🔹 send capacity on create
-      formData.append('managerId', user._id);
-      formData.append('photo', newRoom.imageFile);
+      formData.append("title", newRoom.title);
+      formData.append("nightlyRate", newRoom.nightlyRate);
+      formData.append("summary", newRoom.summary);
+      formData.append("capacity", newRoom.capacity);
+      formData.append("managerId", user._id);
+      formData.append("photo", newRoom.imageFile);
 
       const res = await fetch(`${API_URL}/api/rooms`, {
-        method: 'POST',
+        method: "POST",
         body: formData,
       });
 
       const data = await res.json();
       if (res.ok) {
-        Swal.fire('Room added', 'Room added to your inventory.', 'success');
+        Swal.fire("Room added", "Room added to your inventory.", "success");
         setShowModal(false);
         setNewRoom({
-          title: '',
-          nightlyRate: '',
-          capacity: '',
-          summary: '',
+          title: "",
+          nightlyRate: "",
+          capacity: "",
+          summary: "",
           imageFile: null,
         });
         fetchRooms();
       } else {
-        Swal.fire('Error', data.message || 'Error adding room', 'error');
+        Swal.fire("Error", data.message || "Error adding room", "error");
       }
     } catch (error) {
-      console.error('Error adding room:', error);
-      Swal.fire('Error', 'Error adding room', 'error');
+      console.error("Error adding room:", error);
+      Swal.fire("Error", "Error adding room", "error");
     }
   };
 
-  // ❌ If not logged in or not owner/staff
+  // ❌ Not logged in / not owner-staff
   if (!user || !isManagerLike) {
     return (
       <>
@@ -175,8 +169,8 @@ const fetchRooms = async () => {
 
   const getCapacityLabel = (room) => {
     const cap = room.capacity ?? room.maxGuests ?? room.roomCapacity;
-    if (!cap) return '—';
-    return `${cap} guest${Number(cap) > 1 ? 's' : ''}`;
+    if (!cap) return "—";
+    return `${cap} guest${Number(cap) > 1 ? "s" : ""}`;
   };
 
   return (
@@ -185,7 +179,7 @@ const fetchRooms = async () => {
 
       <div style={styles.page}>
         <div style={styles.wrapper}>
-          {/* Header band inside page */}
+          {/* Header */}
           <header style={styles.headerBand}>
             <div>
               <p style={styles.headerKicker}>Hotel Mate · Inventory</p>
@@ -194,15 +188,14 @@ const fetchRooms = async () => {
                 Manage every room that appears in guest searches and bookings.
               </p>
             </div>
+
             <button style={styles.addBtn} onClick={() => setShowModal(true)}>
               <span style={styles.addBtnIcon}>＋</span>
               <span>Add new room</span>
             </button>
           </header>
 
-          {/* Table + count card */}
           <section style={styles.mainLayout}>
-            {/* Left: rooms table */}
             <div style={styles.panel}>
               <div style={styles.panelHeaderRow}>
                 <div>
@@ -211,6 +204,7 @@ const fetchRooms = async () => {
                     Guests can book any room that is listed here.
                   </p>
                 </div>
+
                 <div style={styles.badgeCount}>
                   <span style={styles.badgeCountLabel}>Total rooms</span>
                   <span style={styles.badgeCountNumber}>{rooms.length}</span>
@@ -221,8 +215,7 @@ const fetchRooms = async () => {
                 <div style={styles.emptyState}>
                   <p style={styles.emptyTitle}>No rooms in inventory yet</p>
                   <p style={styles.emptyText}>
-                    Click <strong>&ldquo;Add new room&rdquo;</strong> to create your
-                    first listing.
+                    Click <strong>&ldquo;Add new room&rdquo;</strong> to create your first listing.
                   </p>
                 </div>
               ) : (
@@ -237,55 +230,48 @@ const fetchRooms = async () => {
                         <th style={styles.thActions}>Actions</th>
                       </tr>
                     </thead>
+
                     <tbody>
                       {rooms.map((room, idx) => (
                         <tr
                           key={room._id}
                           style={idx % 2 === 0 ? styles.rowEven : styles.rowOdd}
                         >
-                          {/* Room cell with photo + info */}
                           <td style={styles.tdRoom}>
                             <div style={styles.roomCellInner}>
                               <div style={styles.imageShell}>
-                                {room.photo && (
+                                {room.photo ? (
                                   <img
                                     src={`${API_URL}/assets/images/${room.photo}`}
                                     alt={room.title}
                                     style={styles.image}
                                   />
+                                ) : (
+                                  <div style={styles.noImg}>No photo</div>
                                 )}
                               </div>
+
                               <div>
                                 <div style={styles.roomTitle}>{room.title}</div>
                                 <div style={styles.roomMeta}>
-                                  ID: {room._id?.slice(-6) || 'N/A'}
+                                  ID: {room._id?.slice(-6) || "N/A"}
                                 </div>
                               </div>
                             </div>
                           </td>
 
-                          {/* Price */}
                           <td style={styles.tdPrice}>
-                            <span style={styles.priceChip}>
-                              {room.nightlyRate} OMR
-                            </span>
+                            <span style={styles.priceChip}>{room.nightlyRate} OMR</span>
                           </td>
 
-                          {/* Capacity */}
                           <td style={styles.tdCapacity}>
-                            <span style={styles.capacityPill}>
-                              {getCapacityLabel(room)}
-                            </span>
+                            <span style={styles.capacityPill}>{getCapacityLabel(room)}</span>
                           </td>
 
-                          {/* Description */}
                           <td style={styles.tdDescription}>
-                            {room.summary?.length > 70
-                              ? room.summary.slice(0, 70) + '…'
-                              : room.summary}
+                            {room.summary?.length > 70 ? room.summary.slice(0, 70) + "…" : room.summary}
                           </td>
 
-                          {/* Actions */}
                           <td style={styles.tdActions}>
                             <button
                               style={styles.smallBtn}
@@ -295,13 +281,9 @@ const fetchRooms = async () => {
                               Edit
                             </button>
 
-                            {/* ❌ Delete only visible for owner (not staff) */}
-                            {user.role === 'owner' && (
+                            {user.role === "owner" && (
                               <button
-                                style={{
-                                  ...styles.smallBtn,
-                                  ...styles.smallBtnDanger,
-                                }}
+                                style={{ ...styles.smallBtn, ...styles.smallBtnDanger }}
                                 type="button"
                                 onClick={() => handleDelete(room._id)}
                               >
@@ -317,12 +299,10 @@ const fetchRooms = async () => {
               )}
             </div>
 
-            {/* Right: mini summary card */}
             <aside style={styles.sideCard}>
               <h3 style={styles.sideTitle}>Inventory snapshot</h3>
               <p style={styles.sideText}>
-                Keep your room photos, pricing, and descriptions up to date. Well-presented
-                rooms are more likely to be booked by guests.
+                Keep photos, pricing, and descriptions up to date. Well-presented rooms are more likely to be booked.
               </p>
 
               <div style={styles.sideStatRow}>
@@ -331,8 +311,7 @@ const fetchRooms = async () => {
               </div>
 
               <p style={styles.sideHint}>
-                Tip: Use landscape images with good lighting, and mention bed type, view,
-                capacity, and key facilities in the description.
+                Tip: Use bright landscape images and mention bed type, view, facilities, and capacity.
               </p>
             </aside>
           </section>
@@ -345,14 +324,11 @@ const fetchRooms = async () => {
           <div style={styles.modal}>
             <div style={styles.modalHead}>
               <h3 style={styles.modalTitle}>Add new room</h3>
-              <button
-                type="button"
-                style={styles.modalClose}
-                onClick={() => setShowModal(false)}
-              >
+              <button type="button" style={styles.modalClose} onClick={() => setShowModal(false)}>
                 ✕
               </button>
             </div>
+
             <div style={styles.modalBody}>
               <form onSubmit={handleSubmit}>
                 <div style={styles.fieldGroup}>
@@ -361,22 +337,19 @@ const fetchRooms = async () => {
                     type="text"
                     placeholder="e.g. Deluxe King Room"
                     value={newRoom.title}
-                    onChange={(e) =>
-                      setNewRoom({ ...newRoom, title: e.target.value })
-                    }
+                    onChange={(e) => setNewRoom({ ...newRoom, title: e.target.value })}
                     style={styles.input}
                     required
                   />
                 </div>
+
                 <div style={styles.fieldGroup}>
                   <label style={styles.label}>Price per night (OMR)</label>
                   <input
                     type="number"
                     placeholder="e.g. 45"
                     value={newRoom.nightlyRate}
-                    onChange={(e) =>
-                      setNewRoom({ ...newRoom, nightlyRate: e.target.value })
-                    }
+                    onChange={(e) => setNewRoom({ ...newRoom, nightlyRate: e.target.value })}
                     style={styles.input}
                     min="0"
                     step="0.01"
@@ -384,58 +357,40 @@ const fetchRooms = async () => {
                   />
                 </div>
 
-                {/* Capacity field */}
                 <div style={styles.fieldGroup}>
                   <label style={styles.label}>Room capacity (persons)</label>
                   <input
                     type="number"
                     placeholder="e.g. 2"
                     value={newRoom.capacity}
-                    onChange={(e) =>
-                      setNewRoom({ ...newRoom, capacity: e.target.value })
-                    }
+                    onChange={(e) => setNewRoom({ ...newRoom, capacity: e.target.value })}
                     style={styles.input}
                     min="1"
                     step="1"
                     required
                   />
-                  <p style={styles.hint}>
-                    How many guests can comfortably stay in this room?
-                  </p>
+                  <p style={styles.hint}>How many guests can comfortably stay in this room?</p>
                 </div>
 
                 <div style={styles.fieldGroup}>
                   <label style={styles.label}>Description</label>
                   <textarea
-                    placeholder="Short description (bed type, view, key facilities)"
+                    placeholder="Bed type, view, key facilities"
                     value={newRoom.summary}
-                    onChange={(e) =>
-                      setNewRoom({ ...newRoom, summary: e.target.value })
-                    }
-                    style={{ ...styles.input, height: '90px', resize: 'vertical' }}
+                    onChange={(e) => setNewRoom({ ...newRoom, summary: e.target.value })}
+                    style={{ ...styles.input, height: "90px", resize: "vertical" }}
                     required
                   />
                 </div>
+
                 <div style={styles.fieldGroup}>
                   <label style={styles.label}>Room photo</label>
-                  <input
-                    type="file"
-                    onChange={handleFileChange}
-                    style={styles.input}
-                    accept="image/*"
-                    required
-                  />
-                  <p style={styles.hint}>
-                    Use a clear, horizontal photo of the room with good lighting.
-                  </p>
+                  <input type="file" onChange={handleFileChange} style={styles.input} accept="image/*" required />
+                  <p style={styles.hint}>Use a clear horizontal photo with good lighting.</p>
                 </div>
 
                 <div style={styles.modalFoot}>
-                  <button
-                    type="button"
-                    style={styles.secondaryBtn}
-                    onClick={() => setShowModal(false)}
-                  >
+                  <button type="button" style={styles.secondaryBtn} onClick={() => setShowModal(false)}>
                     Cancel
                   </button>
                   <button type="submit" style={styles.primaryBtn}>
@@ -454,14 +409,11 @@ const fetchRooms = async () => {
           <div style={styles.modal}>
             <div style={styles.modalHead}>
               <h3 style={styles.modalTitle}>Edit room</h3>
-              <button
-                type="button"
-                style={styles.modalClose}
-                onClick={() => setEditModalOpen(false)}
-              >
+              <button type="button" style={styles.modalClose} onClick={() => setEditModalOpen(false)}>
                 ✕
               </button>
             </div>
+
             <div style={styles.modalBody}>
               <form onSubmit={handleUpdate}>
                 <div style={styles.fieldGroup}>
@@ -469,27 +421,18 @@ const fetchRooms = async () => {
                   <input
                     type="text"
                     value={currentRoom.title}
-                    onChange={(e) =>
-                      setCurrentRoom({
-                        ...currentRoom,
-                        title: e.target.value,
-                      })
-                    }
+                    onChange={(e) => setCurrentRoom({ ...currentRoom, title: e.target.value })}
                     style={styles.input}
                     required
                   />
                 </div>
+
                 <div style={styles.fieldGroup}>
                   <label style={styles.label}>Price per night (OMR)</label>
                   <input
                     type="number"
                     value={currentRoom.nightlyRate}
-                    onChange={(e) =>
-                      setCurrentRoom({
-                        ...currentRoom,
-                        nightlyRate: e.target.value,
-                      })
-                    }
+                    onChange={(e) => setCurrentRoom({ ...currentRoom, nightlyRate: e.target.value })}
                     style={styles.input}
                     min="0"
                     step="0.01"
@@ -497,23 +440,12 @@ const fetchRooms = async () => {
                   />
                 </div>
 
-                {/* Capacity edit field */}
                 <div style={styles.fieldGroup}>
                   <label style={styles.label}>Room capacity (persons)</label>
                   <input
                     type="number"
-                    value={
-                      currentRoom.capacity ??
-                      currentRoom.maxGuests ??
-                      currentRoom.roomCapacity ??
-                      ''
-                    }
-                    onChange={(e) =>
-                      setCurrentRoom({
-                        ...currentRoom,
-                        capacity: e.target.value,
-                      })
-                    }
+                    value={currentRoom.capacity ?? currentRoom.maxGuests ?? currentRoom.roomCapacity ?? ""}
+                    onChange={(e) => setCurrentRoom({ ...currentRoom, capacity: e.target.value })}
                     style={styles.input}
                     min="1"
                     step="1"
@@ -525,23 +457,14 @@ const fetchRooms = async () => {
                   <label style={styles.label}>Description</label>
                   <textarea
                     value={currentRoom.summary}
-                    onChange={(e) =>
-                      setCurrentRoom({
-                        ...currentRoom,
-                        summary: e.target.value,
-                      })
-                    }
-                    style={{ ...styles.input, height: '90px', resize: 'vertical' }}
+                    onChange={(e) => setCurrentRoom({ ...currentRoom, summary: e.target.value })}
+                    style={{ ...styles.input, height: "90px", resize: "vertical" }}
                     required
                   />
                 </div>
 
                 <div style={styles.modalFoot}>
-                  <button
-                    type="button"
-                    style={styles.secondaryBtn}
-                    onClick={() => setEditModalOpen(false)}
-                  >
+                  <button type="button" style={styles.secondaryBtn} onClick={() => setEditModalOpen(false)}>
                     Cancel
                   </button>
                   <button type="submit" style={styles.primaryBtn}>
@@ -559,476 +482,385 @@ const fetchRooms = async () => {
 
 const styles = {
   page: {
-    minHeight: '100vh',
-    backgroundColor: '#f3f6fb',
+    minHeight: "100vh",
+    backgroundColor: "#faf6f1",
     backgroundImage:
-      'radial-gradient(circle at top right, rgba(148,163,253,0.35), transparent 55%), ' +
-      'radial-gradient(circle at bottom left, rgba(56,189,248,0.18), transparent 55%)',
+      "radial-gradient(circle at top right, rgba(226, 184, 44, 0.35), transparent 55%), " +
+      "radial-gradient(circle at bottom left, rgba(212,175,55,0.25), transparent 55%)",
   },
   wrapper: {
-    maxWidth: '1120px',
-    margin: '0 auto',
-    padding: '22px 16px 40px',
+    maxWidth: "1120px",
+    margin: "0 auto",
+    padding: "22px 16px 40px",
   },
 
   headerBand: {
-    marginBottom: '18px',
-    padding: '16px 16px 14px',
-    borderRadius: '18px',
-    border: '1px solid rgba(15,23,42,0.06)',
+    marginBottom: "18px",
+    padding: "16px 16px 14px",
+    borderRadius: "18px",
+    border: "1px solid rgba(212,175,55,0.35)",
     backgroundImage:
-      'radial-gradient(circle at top, rgba(148,163,253,0.28), transparent 55%), ' +
-      'linear-gradient(145deg, #0a3d91, #1e5fe0)',
-    boxShadow: '0 18px 38px rgba(15,23,42,0.22)',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    gap: '16px',
-    color: '#f9fafb',
-    flexWrap: 'wrap',
+      "radial-gradient(circle at top, rgba(245,210,122,0.28), transparent 55%), " +
+      "linear-gradient(145deg, #8a5a24, #5e3418)",
+    boxShadow: "0 18px 38px rgba(61,42,20,0.18)",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: "16px",
+    color: "#fffaf3",
+    flexWrap: "wrap",
   },
   headerKicker: {
     margin: 0,
-    fontSize: '11px',
-    textTransform: 'uppercase',
-    letterSpacing: '0.16em',
-    color: '#bfdbfe',
+    fontSize: "11px",
+    textTransform: "uppercase",
+    letterSpacing: "0.16em",
+    color: "#f5d27a",
   },
   title: {
-    margin: '4px 0 4px',
-    fontSize: '22px',
-    fontWeight: 800,
-    letterSpacing: '0.04em',
-    textTransform: 'uppercase',
-    color: '#f9fafb',
+    margin: "4px 0 4px",
+    fontSize: "22px",
+    fontWeight: 900,
+    letterSpacing: "0.04em",
+    textTransform: "uppercase",
+    color: "#fffaf3",
   },
   subtitle: {
     margin: 0,
-    fontSize: '13px',
-    color: '#e5e7eb',
+    fontSize: "13px",
+    color: "#f3e6d8",
     opacity: 0.95,
   },
 
   mainLayout: {
-    display: 'grid',
-    gridTemplateColumns: 'minmax(0, 2.4fr) minmax(260px, 1fr)',
-    gap: '18px',
+    display: "grid",
+    gridTemplateColumns: "minmax(0, 2.4fr) minmax(260px, 1fr)",
+    gap: "18px",
   },
 
   panel: {
-    borderRadius: '20px',
-    border: '1px solid rgba(15,23,42,0.06)',
-    padding: '16px 16px 14px',
-    backgroundColor: '#ffffff',
-    boxShadow: '0 18px 40px rgba(15,23,42,0.10)',
-    color: '#0b1a33',
+    borderRadius: "20px",
+    border: "1px solid rgba(212,175,55,0.30)",
+    padding: "16px 16px 14px",
+    backgroundColor: "#ffffff",
+    boxShadow: "0 18px 40px rgba(61,42,20,0.10)",
+    color: "#4a2c1d",
   },
   panelHeaderRow: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    gap: '12px',
-    marginBottom: '10px',
-    flexWrap: 'wrap',
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: "12px",
+    marginBottom: "10px",
+    flexWrap: "wrap",
   },
   panelTitle: {
     margin: 0,
-    fontSize: '1rem',
-    fontWeight: 800,
+    fontSize: "1rem",
+    fontWeight: 900,
+    color: "#3d2a14",
   },
   panelSubtitle: {
-    marginTop: '4px',
+    marginTop: "4px",
     marginBottom: 0,
-    fontSize: '0.85rem',
-    color: '#6b7280',
+    fontSize: "0.85rem",
+    color: "#7a4a2e",
     opacity: 0.95,
   },
 
   badgeCount: {
-    borderRadius: '999px',
-    padding: '6px 12px',
-    backgroundColor: '#eff6ff',
-    border: '1px solid rgba(37,99,235,0.35)',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '6px',
-    fontSize: '0.8rem',
+    borderRadius: "999px",
+    padding: "6px 12px",
+    backgroundColor: "#fdf4e3",
+    border: "1px solid rgba(212,175,55,0.30)",
+    display: "flex",
+    alignItems: "center",
+    gap: "6px",
+    fontSize: "0.8rem",
   },
-  badgeCountLabel: {
-    color: '#1e3a8a',
-  },
-  badgeCountNumber: {
-    fontWeight: 800,
-    color: '#1d4ed8',
-  },
+  badgeCountLabel: { color: "#7a4a2e", fontWeight: 800 },
+  badgeCountNumber: { fontWeight: 900, color: "#c9a24d" },
 
   addBtn: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: '6px',
-    padding: '10px 18px',
-    borderRadius: '999px',
-    border: 'none',
-    cursor: 'pointer',
-    backgroundImage: 'linear-gradient(135deg,#0a3d91,#1e5fe0)',
-    color: '#f9fafb',
-    fontWeight: 800,
-    boxShadow: '0 14px 32px rgba(37,99,235,0.45)',
-    fontSize: '0.9rem',
-    whiteSpace: 'nowrap',
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "6px",
+    padding: "10px 18px",
+    borderRadius: "999px",
+    border: "none",
+    cursor: "pointer",
+    backgroundImage: "linear-gradient(135deg,#7a4a2e,#d4af37)",
+    color: "#fffaf3",
+    fontWeight: 900,
+    boxShadow: "0 14px 32px rgba(61,42,20,0.22)",
+    fontSize: "0.9rem",
+    whiteSpace: "nowrap",
   },
-  addBtnIcon: {
-    fontSize: '1.1rem',
-    marginTop: '-1px',
-  },
+  addBtnIcon: { fontSize: "1.1rem", marginTop: "-1px" },
 
-  tableWrapper: {
-    width: '100%',
-    overflowX: 'auto',
-    marginTop: '6px',
-  },
-  table: {
-    width: '100%',
-    borderCollapse: 'collapse',
-    borderRadius: '14px',
-    overflow: 'hidden',
-  },
+  tableWrapper: { width: "100%", overflowX: "auto", marginTop: "6px" },
+  table: { width: "100%", borderCollapse: "collapse", borderRadius: "14px", overflow: "hidden" },
+
   th: {
-    textAlign: 'left',
-    padding: '10px 12px',
-    fontSize: '0.8rem',
-    color: '#e5f0ff',
-    borderBottom: '1px solid rgba(148,163,184,0.4)',
-    backgroundColor: '#0f172a',
+    textAlign: "left",
+    padding: "10px 12px",
+    fontSize: "0.8rem",
+    backgroundColor: "rgba(212,175,55,0.14)",
+    color: "#7a4a2e",
+    borderBottom: "1px solid rgba(212,175,55,0.24)",
   },
   thPrice: {
-    textAlign: 'right',
-    padding: '10px 12px',
-    fontSize: '0.8rem',
-    color: '#e5f0ff',
-    borderBottom: '1px solid rgba(148,163,184,0.4)',
-    backgroundColor: '#0f172a',
-    whiteSpace: 'nowrap',
+    textAlign: "right",
+    padding: "10px 12px",
+    fontSize: "0.8rem",
+    backgroundColor: "rgba(212,175,55,0.14)",
+    color: "#7a4a2e",
+    borderBottom: "1px solid rgba(212,175,55,0.24)",
+    whiteSpace: "nowrap",
   },
   thCapacity: {
-    textAlign: 'center',
-    padding: '10px 12px',
-    fontSize: '0.8rem',
-    color: '#e5f0ff',
-    borderBottom: '1px solid rgba(148,163,184,0.4)',
-    backgroundColor: '#0f172a',
-    whiteSpace: 'nowrap',
+    textAlign: "center",
+    padding: "10px 12px",
+    fontSize: "0.8rem",
+    backgroundColor: "rgba(212,175,55,0.14)",
+    color: "#7a4a2e",
+    borderBottom: "1px solid rgba(212,175,55,0.24)",
+    whiteSpace: "nowrap",
   },
   thDescription: {
-    textAlign: 'left',
-    padding: '10px 12px',
-    fontSize: '0.8rem',
-    color: '#e5f0ff',
-    borderBottom: '1px solid rgba(148,163,184,0.4)',
-    backgroundColor: '#0f172a',
+    textAlign: "left",
+    padding: "10px 12px",
+    fontSize: "0.8rem",
+    backgroundColor: "rgba(212,175,55,0.14)",
+    color: "#7a4a2e",
+    borderBottom: "1px solid rgba(212,175,55,0.24)",
   },
   thActions: {
-    textAlign: 'center',
-    padding: '10px 12px',
-    fontSize: '0.8rem',
-    color: '#e5f0ff',
-    borderBottom: '1px solid rgba(148,163,184,0.4)',
-    backgroundColor: '#0f172a',
-    whiteSpace: 'nowrap',
+    textAlign: "center",
+    padding: "10px 12px",
+    fontSize: "0.8rem",
+    backgroundColor: "rgba(212,175,55,0.14)",
+    color: "#7a4a2e",
+    borderBottom: "1px solid rgba(212,175,55,0.24)",
+    whiteSpace: "nowrap",
   },
 
-  rowEven: {
-    backgroundColor: '#f9fafb',
-  },
-  rowOdd: {
-    backgroundColor: '#eff6ff',
-  },
+  rowEven: { backgroundColor: "#faf6f1" },
+  rowOdd: { backgroundColor: "#f3e6d8" },
 
   tdRoom: {
-    padding: '10px 12px',
-    borderBottom: '1px solid rgba(148,163,184,0.25)',
-    verticalAlign: 'middle',
+    padding: "10px 12px",
+    borderBottom: "1px solid rgba(212,175,55,0.22)",
+    verticalAlign: "middle",
   },
-  roomCellInner: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
-  },
+  roomCellInner: { display: "flex", alignItems: "center", gap: "10px" },
+
   imageShell: {
-    width: '56px',
-    height: '56px',
-    borderRadius: '12px',
-    border: '1px solid rgba(148,163,184,0.7)',
-    overflow: 'hidden',
-    backgroundColor: '#e5edff',
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
+    width: "56px",
+    height: "56px",
+    borderRadius: "12px",
+    border: "1px solid rgba(212,175,55,0.30)",
+    overflow: "hidden",
+    backgroundColor: "#f3e6d8",
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
   },
-  image: {
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
-  },
-  roomTitle: {
-    fontSize: '0.92rem',
-    fontWeight: 700,
-    color: '#0f172a',
-  },
-  roomMeta: {
-    fontSize: '0.75rem',
-    color: '#6b7280',
-  },
+  image: { width: "100%", height: "100%", objectFit: "cover" },
+  noImg: { fontSize: "0.75rem", color: "#7a4a2e", fontWeight: 800 },
+
+  roomTitle: { fontSize: "0.92rem", fontWeight: 900, color: "#3d2a14" },
+  roomMeta: { fontSize: "0.75rem", color: "#8c7a55", fontWeight: 700 },
 
   tdPrice: {
-    padding: '10px 12px',
-    borderBottom: '1px solid rgba(148,163,184,0.25)',
-    textAlign: 'right',
-    verticalAlign: 'middle',
+    padding: "10px 12px",
+    borderBottom: "1px solid rgba(212,175,55,0.22)",
+    textAlign: "right",
+    verticalAlign: "middle",
   },
   priceChip: {
-    display: 'inline-block',
-    padding: '4px 10px',
-    borderRadius: '999px',
-    backgroundColor: 'rgba(37,99,235,0.08)',
-    color: '#1d4ed8',
-    fontSize: '0.8rem',
-    fontWeight: 700,
+    display: "inline-block",
+    padding: "4px 10px",
+    borderRadius: "999px",
+    backgroundColor: "rgba(212,175,55,0.22)",
+    border: "1px solid rgba(212,175,55,0.30)",
+    color: "#5a3a1a",
+    fontSize: "0.8rem",
+    fontWeight: 900,
   },
 
   tdCapacity: {
-    padding: '10px 12px',
-    borderBottom: '1px solid rgba(148,163,184,0.25)',
-    textAlign: 'center',
-    verticalAlign: 'middle',
+    padding: "10px 12px",
+    borderBottom: "1px solid rgba(212,175,55,0.22)",
+    textAlign: "center",
+    verticalAlign: "middle",
   },
   capacityPill: {
-    display: 'inline-block',
-    padding: '4px 8px',
-    borderRadius: '999px',
-    backgroundColor: '#ecfdf5',
-    border: '1px solid #22c55e33',
-    fontSize: '0.78rem',
-    color: '#166534',
-    fontWeight: 600,
+    display: "inline-block",
+    padding: "4px 10px",
+    borderRadius: "999px",
+    backgroundColor: "rgba(34,197,94,0.10)",
+    border: "1px solid rgba(34,197,94,0.20)",
+    fontSize: "0.78rem",
+    color: "#166534",
+    fontWeight: 900,
   },
 
   tdDescription: {
-    padding: '10px 12px',
-    borderBottom: '1px solid rgba(148,163,184,0.25)',
-    verticalAlign: 'top',
-    fontSize: '0.82rem',
-    color: '#4b5563',
+    padding: "10px 12px",
+    borderBottom: "1px solid rgba(212,175,55,0.22)",
+    verticalAlign: "top",
+    fontSize: "0.82rem",
+    color: "#6b5a3c",
+    fontWeight: 700,
   },
 
   tdActions: {
-    padding: '10px 12px',
-    borderBottom: '1px solid rgba(148,163,184,0.25)',
-    textAlign: 'center',
-    verticalAlign: 'middle',
-    whiteSpace: 'nowrap',
+    padding: "10px 12px",
+    borderBottom: "1px solid rgba(212,175,55,0.22)",
+    textAlign: "center",
+    verticalAlign: "middle",
+    whiteSpace: "nowrap",
   },
 
   smallBtn: {
-    padding: '6px 12px',
-    borderRadius: '999px',
-    border: '1px solid rgba(148,163,184,0.8)',
-    backgroundColor: '#ffffff',
-    color: '#0f172a',
-    fontWeight: 700,
-    fontSize: '0.78rem',
-    cursor: 'pointer',
-    marginRight: '6px',
+    padding: "6px 12px",
+    borderRadius: "999px",
+    border: "1px solid rgba(212,175,55,0.30)",
+    backgroundColor: "#ffffff",
+    color: "#3d2a14",
+    fontWeight: 900,
+    fontSize: "0.78rem",
+    cursor: "pointer",
+    marginRight: "6px",
   },
   smallBtnDanger: {
-    borderColor: 'rgba(248,113,113,0.8)',
-    backgroundImage:
-      'linear-gradient(135deg,rgba(248,113,113,0.08),rgba(248,113,113,0.18))',
-    color: '#b91c1c',
+    borderColor: "rgba(248,113,113,0.55)",
+    backgroundImage: "linear-gradient(135deg, rgba(248,113,113,0.10), rgba(212,175,55,0.14))",
+    color: "#b91c1c",
   },
 
   sideCard: {
-    borderRadius: '20px',
-    border: '1px solid rgba(15,23,42,0.06)',
-    padding: '16px 16px 14px',
+    borderRadius: "20px",
+    border: "1px solid rgba(212,175,55,0.30)",
+    padding: "16px 16px 14px",
     backgroundImage:
-      'radial-gradient(circle at top, rgba(191,219,254,0.35), transparent 55%), ' +
-      'linear-gradient(145deg, #ffffff, #f5f7ff)',
-    boxShadow: '0 18px 40px rgba(15,23,42,0.10)',
-    color: '#0b1a33',
+      "radial-gradient(circle at top, rgba(212,175,55,0.20), transparent 55%), " +
+      "linear-gradient(145deg, #ffffff, #fffaf3)",
+    boxShadow: "0 18px 40px rgba(61,42,20,0.10)",
+    color: "#3d2a14",
   },
-  sideTitle: {
-    margin: 0,
-    fontSize: '0.95rem',
-    fontWeight: 800,
-  },
-  sideText: {
-    marginTop: '6px',
-    fontSize: '0.82rem',
-    color: '#6b7280',
-    opacity: 0.95,
-  },
+  sideTitle: { margin: 0, fontSize: "0.95rem", fontWeight: 900 },
+  sideText: { marginTop: "6px", fontSize: "0.82rem", color: "#6b5a3c", fontWeight: 700 },
   sideStatRow: {
-    marginTop: '12px',
-    padding: '8px 10px',
-    borderRadius: '12px',
-    backgroundColor: '#eff6ff',
-    border: '1px solid rgba(37,99,235,0.25)',
-    display: 'flex',
-    justifyContent: 'spaceBetween',
-    fontSize: '0.82rem',
+    marginTop: "12px",
+    padding: "8px 10px",
+    borderRadius: "12px",
+    backgroundColor: "rgba(212,175,55,0.10)",
+    border: "1px solid rgba(212,175,55,0.22)",
+    display: "flex",
+    justifyContent: "space-between", // ✅ fixed
+    alignItems: "center",
+    fontSize: "0.82rem",
   },
-  sideStatLabel: {
-    color: '#1e3a8a',
-  },
-  sideStatValue: {
-    fontWeight: 800,
-    color: '#1d4ed8',
-  },
-  sideHint: {
-    marginTop: '10px',
-    fontSize: '0.78rem',
-    color: '#6b7280',
-    opacity: 0.95,
-  },
+  sideStatLabel: { color: "#6b5a3c", fontWeight: 800 },
+  sideStatValue: { fontWeight: 900, color: "#3d2a14" },
+  sideHint: { marginTop: "10px", fontSize: "0.78rem", color: "#8c7a55", fontWeight: 700 },
 
   modalOverlay: {
-    position: 'fixed',
+    position: "fixed",
     inset: 0,
-    backgroundColor: 'rgba(15,23,42,0.45)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "rgba(61,42,20,0.40)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
     zIndex: 1000,
-    padding: '12px',
+    padding: "12px",
   },
   modal: {
-    width: 'min(480px, 100%)',
-    backgroundColor: '#ffffff',
-    borderRadius: '18px',
-    border: '1px solid rgba(15,23,42,0.12)',
-    boxShadow: '0 30px 80px rgba(15,23,42,0.28)',
-    overflow: 'hidden',
-    color: '#0b1a33',
+    width: "min(520px, 100%)",
+    backgroundColor: "#ffffff",
+    borderRadius: "18px",
+    border: "1px solid rgba(212,175,55,0.35)",
+    boxShadow: "0 30px 80px rgba(61,42,20,0.28)",
+    overflow: "hidden",
+    color: "#3d2a14",
   },
   modalHead: {
-    padding: '12px 16px',
-    borderBottom: '1px solid rgba(148,163,184,0.35)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: '8px',
+    padding: "12px 16px",
+    borderBottom: "1px solid rgba(212,175,55,0.22)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: "8px",
+    backgroundImage: "linear-gradient(145deg, #fffaf3, #ffffff)",
   },
-  modalTitle: {
-    margin: 0,
-    fontSize: '1rem',
-    fontWeight: 800,
-  },
-  modalClose: {
-    border: 'none',
-    background: 'transparent',
-    cursor: 'pointer',
-    fontSize: '1rem',
-    color: '#6b7280',
-  },
-  modalBody: {
-    padding: '14px 16px 12px',
-  },
+  modalTitle: { margin: 0, fontSize: "1rem", fontWeight: 900, color: "#3d2a14" },
+  modalClose: { border: "none", background: "transparent", cursor: "pointer", fontSize: "1rem", color: "#6b5a3c" },
+  modalBody: { padding: "14px 16px 12px" },
   modalFoot: {
-    marginTop: '12px',
-    paddingTop: '12px',
-    borderTop: '1px solid rgba(148,163,184,0.35)',
-    display: 'flex',
-    justifyContent: 'flex-end',
-    gap: '8px',
+    marginTop: "12px",
+    paddingTop: "12px",
+    borderTop: "1px solid rgba(212,175,55,0.22)",
+    display: "flex",
+    justifyContent: "flex-end",
+    gap: "8px",
   },
 
-  fieldGroup: {
-    marginBottom: '12px',
-  },
-  label: {
-    display: 'block',
-    marginBottom: '4px',
-    fontSize: '0.8rem',
-    fontWeight: 600,
-    color: '#374151',
-  },
+  fieldGroup: { marginBottom: "12px" },
+  label: { display: "block", marginBottom: "4px", fontSize: "0.8rem", fontWeight: 900, color: "#5a3a1a" },
   input: {
-    width: '100%',
-    padding: '9px 10px',
-    borderRadius: '10px',
-    border: '1px solid rgba(148,163,184,0.9)',
-    backgroundColor: '#f9fafb',
-    color: '#0f172a',
-    fontSize: '0.9rem',
-    outline: 'none',
-    boxSizing: 'border-box',
+    width: "100%",
+    padding: "9px 10px",
+    borderRadius: "10px",
+    border: "1px solid rgba(212,175,55,0.30)",
+    backgroundColor: "#fbf8f3",
+    color: "#3d2a14",
+    fontSize: "0.9rem",
+    outline: "none",
+    boxSizing: "border-box",
   },
-  hint: {
-    marginTop: '4px',
-    fontSize: '0.78rem',
-    color: '#6b7280',
-  },
+  hint: { marginTop: "4px", fontSize: "0.78rem", color: "#8c7a55", fontWeight: 700 },
+
   primaryBtn: {
-    padding: '9px 18px',
-    borderRadius: '999px',
-    border: 'none',
-    backgroundImage: 'linear-gradient(135deg,#0a3d91,#1e5fe0)',
-    color: '#f9fafb',
-    fontWeight: 800,
-    fontSize: '0.9rem',
-    cursor: 'pointer',
+    padding: "9px 18px",
+    borderRadius: "999px",
+    border: "none",
+    backgroundImage: "linear-gradient(135deg,#7a4a2e,#d4af37)",
+    color: "#fffaf3",
+    boxShadow: "0 14px 32px rgba(61,42,20,0.22)",
+    fontWeight: 900,
+    fontSize: "0.9rem",
+    cursor: "pointer",
   },
   secondaryBtn: {
-    padding: '9px 16px',
-    borderRadius: '999px',
-    border: '1px solid rgba(148,163,184,0.9)',
-    backgroundColor: 'transparent',
-    color: '#374151',
-    fontWeight: 600,
-    fontSize: '0.9rem',
-    cursor: 'pointer',
+    padding: "9px 16px",
+    borderRadius: "999px",
+    border: "1px solid rgba(212,175,55,0.45)",
+    backgroundColor: "transparent",
+    color: "#6b5a3c",
+    fontWeight: 900,
+    fontSize: "0.9rem",
+    cursor: "pointer",
   },
 
-  emptyState: {
-    padding: '28px 12px 14px',
-    textAlign: 'center',
-  },
-  emptyTitle: {
-    margin: 0,
-    fontWeight: 800,
-    color: '#0f172a',
-    fontSize: '1rem',
-  },
-  emptyText: {
-    marginTop: '6px',
-    fontSize: '0.85rem',
-    color: '#6b7280',
-    opacity: 0.95,
-  },
+  emptyState: { padding: "28px 12px 14px", textAlign: "center" },
+  emptyTitle: { margin: 0, fontWeight: 900, color: "#3d2a14", fontSize: "1rem" },
+  emptyText: { marginTop: "6px", fontSize: "0.85rem", color: "#6b5a3c", fontWeight: 700 },
 
   noticeBox: {
-    maxWidth: '520px',
-    margin: '60px auto 0',
-    backgroundColor: '#ffffff',
-    borderRadius: '18px',
-    border: '1px solid rgba(15,23,42,0.12)',
-    padding: '24px 20px',
-    textAlign: 'center',
-    boxShadow: '0 30px 80px rgba(15,23,42,0.20)',
-    color: '#0b1a33',
+    maxWidth: "520px",
+    margin: "60px auto 0",
+    backgroundColor: "#ffffff",
+    borderRadius: "18px",
+    border: "1px solid rgba(212,175,55,0.35)",
+    padding: "24px 20px",
+    textAlign: "center",
+    boxShadow: "0 30px 80px rgba(61,42,20,0.20)",
+    color: "#3d2a14",
   },
-  noticeTitle: {
-    margin: 0,
-    fontSize: '1.2rem',
-    fontWeight: 800,
-  },
-  noticeText: {
-    marginTop: '8px',
-    fontSize: '0.9rem',
-    color: '#4b5563',
-    opacity: 0.95,
-  },
+  noticeTitle: { margin: 0, fontSize: "1.2rem", fontWeight: 900 },
+  noticeText: { marginTop: "8px", fontSize: "0.9rem", color: "#6b5a3c", fontWeight: 700 },
 };
 
 export default RoomInventory;

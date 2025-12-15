@@ -74,10 +74,7 @@ const BookingCart = () => {
   // Overall cart totals
   const cartSubtotal = useMemo(
     () =>
-      cartItems.reduce(
-        (sum, item) => sum + calculateTotal(item),
-        0
-      ),
+      cartItems.reduce((sum, item) => sum + calculateTotal(item), 0),
     [cartItems]
   );
 
@@ -87,7 +84,7 @@ const BookingCart = () => {
         icon: 'info',
         title: 'Please log in',
         text: 'You need to be logged in to confirm a booking.',
-        confirmButtonColor: '#0A3D91',
+        confirmButtonColor: '#7a4a2e',
       });
       return;
     }
@@ -115,8 +112,8 @@ const BookingCart = () => {
       text: 'You are removing this room from your booking list.',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#0A3D91',
-      cancelButtonColor: '#EF4444',
+      confirmButtonColor: '#7a4a2e',
+      cancelButtonColor: '#b91c1c',
       confirmButtonText: 'Yes, remove it',
     }).then((result) => {
       if (result.isConfirmed) {
@@ -133,8 +130,8 @@ const BookingCart = () => {
       text: 'This will remove all rooms from your booking list.',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#0A3D91',
-      cancelButtonColor: '#EF4444',
+      confirmButtonColor: '#7a4a2e',
+      cancelButtonColor: '#b91c1c',
       confirmButtonText: 'Yes, clear it',
     }).then((result) => {
       if (result.isConfirmed) {
@@ -203,7 +200,7 @@ const BookingCart = () => {
         icon: 'info',
         title: 'Please log in',
         text: 'You need to be logged in to confirm a booking.',
-        confirmButtonColor: '#0A3D91',
+        confirmButtonColor: '#7a4a2e',
       });
       return;
     }
@@ -214,7 +211,7 @@ const BookingCart = () => {
         icon: 'warning',
         title: 'Payment details required',
         text: 'Please enter a card number or an online wallet number.',
-        confirmButtonColor: '#0A3D91',
+        confirmButtonColor: '#7a4a2e',
       });
       return;
     }
@@ -228,7 +225,7 @@ const BookingCart = () => {
           icon: 'warning',
           title: 'Card holder name required',
           text: 'Please enter the name on the card (letters only).',
-          confirmButtonColor: '#0A3D91',
+          confirmButtonColor: '#7a4a2e',
         });
         return;
       }
@@ -238,7 +235,7 @@ const BookingCart = () => {
           icon: 'error',
           title: 'Invalid card number',
           text: 'Card number must be 16 digits.',
-          confirmButtonColor: '#0A3D91',
+          confirmButtonColor: '#7a4a2e',
         });
         return;
       }
@@ -249,7 +246,7 @@ const BookingCart = () => {
           icon: 'error',
           title: 'Invalid expiry date',
           text: 'Expiry must be in MM / YY format.',
-          confirmButtonColor: '#0A3D91',
+          confirmButtonColor: '#7a4a2e',
         });
         return;
       }
@@ -260,7 +257,7 @@ const BookingCart = () => {
           icon: 'error',
           title: 'Invalid expiry month',
           text: 'Please enter a valid month between 01 and 12.',
-          confirmButtonColor: '#0A3D91',
+          confirmButtonColor: '#7a4a2e',
         });
         return;
       }
@@ -270,7 +267,7 @@ const BookingCart = () => {
           icon: 'error',
           title: 'Invalid CVV',
           text: 'CVV must be exactly 3 digits.',
-          confirmButtonColor: '#0A3D91',
+          confirmButtonColor: '#7a4a2e',
         });
         return;
       }
@@ -577,6 +574,10 @@ const BookingCart = () => {
                 >
                   ← Modify room selection
                 </button>
+
+                <div style={styles.summaryNote}>
+                  Secure booking • Premium service • Pay at hotel
+                </div>
               </div>
             </aside>
           </div>
@@ -587,54 +588,61 @@ const BookingCart = () => {
           <div style={styles.modalOverlay}>
             <div style={styles.modal}>
               <div style={styles.modalHeader}>
-                <h3 style={styles.modalTitle}>Room summary</h3>
+                <div>
+                  <p style={styles.modalKicker}>Reservation check</p>
+                  <h3 style={styles.modalTitle}>Room summary</h3>
+                </div>
                 <button
                   style={styles.modalClose}
                   onClick={() => setShowSummary(false)}
                   aria-label="Close"
+                  title="Close"
                 >
-                  ×
+                  ✕
                 </button>
               </div>
 
-              <p style={styles.modalText}>
-                <strong>{selectedItem.title || selectedItem.name}</strong>
-              </p>
-              <p style={styles.modalText}>
-                Stay:{' '}
-                <span style={styles.modalChip}>{getDurationLabel(selectedItem)}</span>
-              </p>
-
-              {(() => {
-                const { from, to } = getStayDates(selectedItem);
-                if (!from || !to) return null;
-                return (
-                  <p style={styles.modalText}>
-                    Dates:{' '}
-                    <span style={styles.modalChip}>
-                      {from} → {to}
-                    </span>
-                  </p>
-                );
-              })()}
-
-              {selectedItem.guestCount && (
-                <p style={styles.modalText}>
-                  Guests:{' '}
-                  <span style={styles.modalChip}>
-                    {selectedItem.guestCount}
-                  </span>
+              <div style={styles.modalBody}>
+                <p style={styles.modalTextStrong}>
+                  {selectedItem.title || selectedItem.name}
                 </p>
-              )}
 
-              <p style={styles.modalText}>
-                Total:{' '}
-                <strong>OMR {calculateTotal(selectedItem).toFixed(2)}</strong>
-              </p>
+                <div style={styles.modalInfoGrid}>
+                  <div style={styles.modalInfoItem}>
+                    <span style={styles.modalInfoLabel}>Stay</span>
+                    <span style={styles.modalChip}>{getDurationLabel(selectedItem)}</span>
+                  </div>
 
-              <button style={styles.modalPrimaryBtn} onClick={handleProceed}>
-                Looks good – next
-              </button>
+                  {(() => {
+                    const { from, to } = getStayDates(selectedItem);
+                    if (!from || !to) return null;
+                    return (
+                      <div style={styles.modalInfoItem}>
+                        <span style={styles.modalInfoLabel}>Dates</span>
+                        <span style={styles.modalChip}>{from} → {to}</span>
+                      </div>
+                    );
+                  })()}
+
+                  {selectedItem.guestCount && (
+                    <div style={styles.modalInfoItem}>
+                      <span style={styles.modalInfoLabel}>Guests</span>
+                      <span style={styles.modalChip}>{selectedItem.guestCount}</span>
+                    </div>
+                  )}
+
+                  <div style={styles.modalInfoItem}>
+                    <span style={styles.modalInfoLabel}>Total</span>
+                    <span style={styles.modalTotalPill}>
+                      OMR {calculateTotal(selectedItem).toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+
+                <button style={styles.modalPrimaryBtn} onClick={handleProceed}>
+                  Looks good – next
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -644,13 +652,17 @@ const BookingCart = () => {
           <div style={styles.modalOverlay}>
             <div style={styles.modal}>
               <div style={styles.modalHeader}>
-                <h3 style={styles.modalTitle}>Confirm booking & payment</h3>
+                <div>
+                  <p style={styles.modalKicker}>Final step</p>
+                  <h3 style={styles.modalTitle}>Confirm booking & payment</h3>
+                </div>
                 <button
                   style={styles.modalClose}
                   onClick={() => setShowPayment(false)}
                   aria-label="Close"
+                  title="Close"
                 >
-                  ×
+                  ✕
                 </button>
               </div>
 
@@ -664,21 +676,16 @@ const BookingCart = () => {
                   null;
 
                 return (
-                  <>
-                    <p style={styles.modalText}>
-                      {(selectedItem.title || selectedItem.name)} – {getDurationLabel(selectedItem)}
-                    </p>
-                    {from && to && (
-                      <p style={styles.modalText}>
-                        <strong>Dates:</strong> {from} → {to}
-                      </p>
-                    )}
-                    {guests && (
-                      <p style={styles.modalText}>
-                        <strong>Guests:</strong> {guests}
-                      </p>
-                    )}
-                  </>
+                  <div style={styles.modalSummaryBar}>
+                    <div style={styles.modalSummaryTitle}>
+                      {(selectedItem.title || selectedItem.name)}
+                    </div>
+                    <div style={styles.modalSummaryMeta}>
+                      <span style={styles.modalMiniPill}>{getDurationLabel(selectedItem)}</span>
+                      {from && to && <span style={styles.modalMiniPill}>{from} → {to}</span>}
+                      {guests && <span style={styles.modalMiniPill}>Guests: {guests}</span>}
+                    </div>
+                  </div>
                 );
               })()}
 
@@ -690,8 +697,10 @@ const BookingCart = () => {
                 No real online payment is processed.
               </p>
 
-              {/* 🔹 Card form styled like your HTML example */}
+              {/* 🔹 Card form styled like premium theme */}
               <div style={styles.cardForm}>
+                <div style={styles.cardFormTopLine} />
+
                 {/* Card holder */}
                 <div style={styles.cardField}>
                   <label style={styles.cardLabel}>Card holder name</label>
@@ -733,9 +742,7 @@ const BookingCart = () => {
                     />
                   </div>
                   <div style={styles.cardField}>
-                    <label style={styles.cardLabel}>
-                      CVV
-                    </label>
+                    <label style={styles.cardLabel}>CVV</label>
                     <input
                       type="text"
                       style={styles.cardInput}
@@ -758,14 +765,22 @@ const BookingCart = () => {
                     onChange={(e) => setWalletNumber(e.target.value)}
                   />
                 </div>
+
+                <div style={styles.payNote}>
+                  <span style={styles.payNoteDot} />
+                  Your information is stored only with this reservation record.
+                </div>
               </div>
 
-              <p style={styles.modalText}>
-                <strong>Total amount:</strong> OMR {calculateTotal(selectedItem).toFixed(2)}
-              </p>
+              <div style={styles.modalTotalRow}>
+                <span style={styles.modalTotalLabel}>Total amount</span>
+                <span style={styles.modalTotalValue}>
+                  OMR {calculateTotal(selectedItem).toFixed(2)}
+                </span>
+              </div>
 
               <button style={styles.payBtn} onClick={handleConfirmRental}>
-                Pay {calculateTotal(selectedItem).toFixed(3)} OMR
+                Confirm reservation
               </button>
 
               <button
@@ -783,13 +798,16 @@ const BookingCart = () => {
         {showThankYou && selectedItem && (
           <div style={styles.modalOverlay}>
             <div style={styles.invoiceCard}>
+              <div style={styles.invoiceTopBar} />
+
               {/* Header */}
               <div style={styles.invoiceHeaderRow}>
                 <div>
-                  <h2 style={styles.invoiceTitle}>Hotel Mate <span style={{ color: '#000' }}>Stay</span></h2>
+                  <h2 style={styles.invoiceTitle}>
+                    Hotel Mate <span style={{ color: '#2b1a12' }}>Stay</span>
+                  </h2>
                   <div style={styles.invoiceMuted}>
                     INVOICE<br />
-                    {/* simple fake number */}
                     #{(selectedItem._id || 'HM-BOOK').toString().slice(-6)}
                   </div>
                 </div>
@@ -799,7 +817,6 @@ const BookingCart = () => {
                 </div>
               </div>
 
-              {/* Table */}
               <table style={styles.invoiceTable}>
                 <thead>
                   <tr>
@@ -839,42 +856,38 @@ const BookingCart = () => {
                     );
                   })()}
 
-                  {/* Subtotal */}
                   <tr>
                     <td style={styles.invoiceTd} />
-                    <td style={{ ...styles.invoiceTd, ...styles.invoiceRight, fontWeight: 600 }}>
+                    <td style={{ ...styles.invoiceTd, ...styles.invoiceRight, fontWeight: 900 }}>
                       SUBTOTAL
                     </td>
-                    <td style={{ ...styles.invoiceTd, ...styles.invoiceRight, fontWeight: 600 }}>
+                    <td style={{ ...styles.invoiceTd, ...styles.invoiceRight, fontWeight: 900 }}>
                       {formatOMR(calculateTotal(selectedItem))}
                     </td>
                   </tr>
 
-                  {/* Taxes (0 for now) */}
                   <tr>
                     <td style={styles.invoiceTd} />
-                    <td style={{ ...styles.invoiceTd, ...styles.invoiceRight, fontWeight: 600 }}>
+                    <td style={{ ...styles.invoiceTd, ...styles.invoiceRight, fontWeight: 900 }}>
                       TAXES
                     </td>
-                    <td style={{ ...styles.invoiceTd, ...styles.invoiceRight, fontWeight: 600 }}>
+                    <td style={{ ...styles.invoiceTd, ...styles.invoiceRight, fontWeight: 900 }}>
                       {formatOMR(0)}
                     </td>
                   </tr>
 
-                  {/* Grand total */}
                   <tr>
                     <td style={styles.invoiceTd} />
-                    <td style={{ ...styles.invoiceTd, ...styles.invoiceRight, fontWeight: 800, fontSize: 16 }}>
+                    <td style={{ ...styles.invoiceTd, ...styles.invoiceRight, fontWeight: 900, fontSize: 16 }}>
                       GRAND TOTAL
                     </td>
-                    <td style={{ ...styles.invoiceTd, ...styles.invoiceRight, fontWeight: 800, fontSize: 16 }}>
+                    <td style={{ ...styles.invoiceTd, ...styles.invoiceRight, fontWeight: 900, fontSize: 16 }}>
                       {formatOMR(calculateTotal(selectedItem))}
                     </td>
                   </tr>
                 </tbody>
               </table>
 
-              {/* Bank / payment note */}
               <div style={styles.invoiceSectionTitle}>PAYMENT AT HOTEL</div>
               <div style={styles.invoiceMuted}>
                 Please present this invoice at check-in. Payment is due in OMR on arrival.
@@ -905,21 +918,21 @@ const BookingCart = () => {
 };
 
 /* ======================
-   STYLES – HOTEL MATE THEME (BLUE & WHITE)
+   STYLES – HOTEL MATE THEME (BROWN / GOLD LUXURY)
    ====================== */
 
 const styles = {
   page: {
     minHeight: '100vh',
-    backgroundColor: '#E8F1FF',
+    backgroundColor: '#f7f1e6',
     backgroundImage:
-      'radial-gradient(circle at top left, rgba(37,99,235,0.16), transparent 55%), ' +
-      'radial-gradient(circle at bottom right, rgba(59,130,246,0.18), transparent 55%)',
-    color: '#0B1A33',
+      'radial-gradient(circle at top left, rgba(212,175,55,0.18), transparent 55%), ' +
+      'radial-gradient(circle at bottom right, rgba(122,74,46,0.16), transparent 55%)',
+    color: '#2b1a12',
   },
 
   band: {
-    padding: '22px 16px 24px',
+    padding: '20px 16px 18px',
   },
 
   bandInner: {
@@ -932,66 +945,75 @@ const styles = {
     alignItems: 'center',
     gap: '18px',
     flexWrap: 'wrap',
-    border: '1px solid rgba(148,163,184,0.45)',
+    border: '1px solid rgba(122,74,46,0.16)',
     backgroundImage:
-      'radial-gradient(circle at top left, rgba(191,219,254,0.9), transparent 70%), ' +
-      'radial-gradient(circle at bottom right, rgba(219,234,254,0.9), transparent 70%), ' +
-      'linear-gradient(135deg, #FFFFFF, #EFF6FF)',
-    boxShadow: '0 18px 45px rgba(15,23,42,0.12)',
+      'radial-gradient(circle at top left, rgba(212,175,55,0.22), transparent 70%), ' +
+      'radial-gradient(circle at bottom right, rgba(122,74,46,0.18), transparent 70%), ' +
+      'linear-gradient(135deg, rgba(255,255,255,0.92), rgba(255,248,225,0.78))',
+    boxShadow: '0 18px 46px rgba(43,26,18,0.18)',
   },
 
   stepLabel: {
     margin: 0,
     fontSize: '11px',
     textTransform: 'uppercase',
-    letterSpacing: '0.12em',
-    color: '#1D4ED8',
+    letterSpacing: '0.16em',
+    color: '#7a4a2e',
+    fontWeight: 900,
   },
 
   bandHeading: {
-    margin: '4px 0 4px',
+    margin: '6px 0 4px',
     fontSize: '22px',
-    fontWeight: 800,
-    color: '#0B1A33',
+    fontWeight: 900,
+    color: '#2b1a12',
+    letterSpacing: '0.02em',
   },
 
   bandText: {
     margin: 0,
     fontSize: '13px',
-    color: '#374151',
+    color: 'rgba(43,26,18,0.72)',
+    lineHeight: 1.55,
   },
 
   bandTotalsBox: {
     padding: '10px 14px',
     borderRadius: '16px',
-    backgroundColor: '#FFFFFF',
-    border: '1px solid rgba(191,219,254,0.95)',
+    backgroundColor: 'rgba(255,255,255,0.82)',
+    backdropFilter: 'blur(10px)',
+    WebkitBackdropFilter: 'blur(10px)',
+    border: '1px solid rgba(122,74,46,0.14)',
     minWidth: '220px',
-    boxShadow: '0 12px 28px rgba(15,23,42,0.12)',
+    boxShadow: '0 14px 30px rgba(43,26,18,0.14)',
   },
 
   bandTotalsLabel: {
     fontSize: '11px',
-    color: '#6B7280',
+    color: 'rgba(43,26,18,0.62)',
     marginBottom: '4px',
+    fontWeight: 800,
+    textTransform: 'uppercase',
+    letterSpacing: '0.12em',
   },
 
   bandTotalsAmount: {
     fontSize: '18px',
-    fontWeight: 800,
-    color: '#0A3D91',
+    fontWeight: 900,
+    color: '#7a4a2e',
   },
 
   bandTotalsHint: {
     marginTop: '4px',
     fontSize: '11px',
-    color: '#4B5563',
+    color: 'rgba(43,26,18,0.62)',
+    lineHeight: 1.45,
   },
 
   wrapper: {
     maxWidth: '1140px',
     margin: '0 auto',
-    padding: '22px 20px 36px',
+    padding: '18px 20px 36px',
   },
 
   mainGrid: {
@@ -1001,11 +1023,13 @@ const styles = {
   },
 
   listPanel: {
-    borderRadius: '20px',
+    borderRadius: '22px',
     padding: '16px 14px 14px',
-    backgroundColor: '#FFFFFF',
-    border: '1px solid rgba(209,213,219,0.9)',
-    boxShadow: '0 18px 40px rgba(15,23,42,0.08)',
+    backgroundColor: 'rgba(255,255,255,0.82)',
+    backdropFilter: 'blur(10px)',
+    WebkitBackdropFilter: 'blur(10px)',
+    border: '1px solid rgba(122,74,46,0.14)',
+    boxShadow: '0 18px 46px rgba(43,26,18,0.12)',
   },
 
   listHeader: {
@@ -1019,39 +1043,40 @@ const styles = {
   sectionTitle: {
     margin: 0,
     fontSize: '16px',
-    fontWeight: 800,
-    color: '#0B1A33',
+    fontWeight: 900,
+    color: '#2b1a12',
+    letterSpacing: '0.02em',
   },
 
   sectionSub: {
     margin: '2px 0 0',
     fontSize: '12px',
-    color: '#4B5563',
+    color: 'rgba(43,26,18,0.70)',
   },
 
   clearBtn: {
-    padding: '6px 12px',
+    padding: '7px 12px',
     borderRadius: '999px',
-    border: '1px solid #FCA5A5',
-    backgroundColor: '#FEF2F2',
-    color: '#B91C1C',
+    border: '1px solid rgba(185,28,28,0.25)',
+    backgroundColor: 'rgba(185,28,28,0.08)',
+    color: '#b91c1c',
     fontSize: '11px',
-    fontWeight: 700,
+    fontWeight: 900,
     cursor: 'pointer',
   },
 
   itemRow: {
     display: 'flex',
     gap: '14px',
-    padding: '12px 10px',
-    borderRadius: '16px',
-    backgroundColor: '#F9FAFB',
-    border: '1px solid rgba(209,213,219,0.9)',
+    padding: '12px 12px',
+    borderRadius: '18px',
+    backgroundColor: 'rgba(212,175,55,0.08)',
+    border: '1px solid rgba(212,175,55,0.20)',
     marginTop: '10px',
   },
 
   thumbWrap: {
-    flex: '0 0 86px',
+    flex: '0 0 90px',
     display: 'flex',
     flexDirection: 'column',
     gap: '6px',
@@ -1059,21 +1084,24 @@ const styles = {
   },
 
   thumb: {
-    width: '86px',
-    height: '86px',
-    borderRadius: '12px',
+    width: '90px',
+    height: '90px',
+    borderRadius: '14px',
     objectFit: 'cover',
-    border: '1px solid rgba(209,213,219,0.9)',
-    backgroundColor: '#E5E7EB',
+    border: '1px solid rgba(122,74,46,0.16)',
+    backgroundColor: '#efe7da',
+    boxShadow: '0 12px 24px rgba(43,26,18,0.12)',
   },
 
   roomBadge: {
     fontSize: '11px',
-    padding: '3px 9px',
+    padding: '4px 10px',
     borderRadius: '999px',
-    backgroundColor: '#EFF6FF',
-    color: '#1D4ED8',
-    fontWeight: 600,
+    backgroundColor: 'rgba(255,255,255,0.72)',
+    border: '1px solid rgba(122,74,46,0.18)',
+    color: '#7a4a2e',
+    fontWeight: 900,
+    letterSpacing: '0.02em',
   },
 
   itemInfo: {
@@ -1092,49 +1120,54 @@ const styles = {
   itemTitle: {
     margin: 0,
     fontSize: '15px',
-    fontWeight: 700,
-    color: '#0B1A33',
+    fontWeight: 900,
+    color: '#2b1a12',
   },
 
   itemMeta: {
-    marginTop: '4px',
+    marginTop: '6px',
   },
 
   badge: {
     display: 'inline-block',
-    padding: '4px 8px',
+    padding: '5px 10px',
     borderRadius: '999px',
     fontSize: '11px',
-    backgroundColor: '#EFF6FF',
-    color: '#1D4ED8',
-    fontWeight: 600,
+    backgroundColor: 'rgba(255,255,255,0.72)',
+    border: '1px solid rgba(122,74,46,0.18)',
+    color: '#7a4a2e',
+    fontWeight: 900,
   },
 
   itemDates: {
-    marginTop: '4px',
+    marginTop: '5px',
     fontSize: '11px',
-    color: '#4B5563',
+    color: 'rgba(43,26,18,0.74)',
   },
 
   itemDatesLabel: {
-    fontWeight: 600,
+    fontWeight: 900,
+    color: 'rgba(43,26,18,0.80)',
   },
 
   itemPriceBlock: {
     textAlign: 'right',
-    minWidth: '130px',
+    minWidth: '140px',
   },
 
   itemPriceLabel: {
     fontSize: '11px',
-    color: '#6B7280',
-    marginBottom: '2px',
+    color: 'rgba(43,26,18,0.62)',
+    marginBottom: '3px',
+    fontWeight: 800,
+    textTransform: 'uppercase',
+    letterSpacing: '0.10em',
   },
 
   itemPrice: {
     fontSize: '14px',
-    fontWeight: 800,
-    color: '#0B1A33',
+    fontWeight: 900,
+    color: '#7a4a2e',
   },
 
   rowActions: {
@@ -1145,25 +1178,25 @@ const styles = {
   },
 
   checkoutBtn: {
-    padding: '7px 14px',
+    padding: '8px 14px',
     borderRadius: '999px',
-    border: 'none',
-    backgroundImage: 'linear-gradient(135deg, #0A3D91, #1E5FE0)',
-    color: '#F9FAFF',
+    border: '1px solid rgba(212,175,55,0.35)',
+    backgroundImage: 'linear-gradient(135deg, #7a4a2e, #d4af37)',
+    color: '#fff8e1',
     fontSize: '12px',
-    fontWeight: 700,
+    fontWeight: 900,
     cursor: 'pointer',
-    boxShadow: '0 10px 22px rgba(37,99,235,0.55)',
+    boxShadow: '0 14px 28px rgba(43,26,18,0.20)',
   },
 
   removeBtn: {
-    padding: '7px 12px',
+    padding: '8px 12px',
     borderRadius: '999px',
-    border: '1px solid #FCA5A5',
-    backgroundColor: '#FEF2F2',
-    color: '#B91C1C',
+    border: '1px solid rgba(185,28,28,0.25)',
+    backgroundColor: 'rgba(185,28,28,0.08)',
+    color: '#b91c1c',
     fontSize: '12px',
-    fontWeight: 600,
+    fontWeight: 900,
     cursor: 'pointer',
   },
 
@@ -1174,33 +1207,36 @@ const styles = {
   },
 
   summaryCard: {
-    borderRadius: '20px',
+    borderRadius: '22px',
     padding: '18px 18px 16px',
-    backgroundColor: '#FFFFFF',
-    border: '1px solid rgba(191,219,254,0.95)',
-    boxShadow: '0 18px 40px rgba(15,23,42,0.12)',
-    color: '#0B1A33',
+    backgroundColor: 'rgba(255,255,255,0.84)',
+    backdropFilter: 'blur(10px)',
+    WebkitBackdropFilter: 'blur(10px)',
+    border: '1px solid rgba(122,74,46,0.14)',
+    boxShadow: '0 18px 46px rgba(43,26,18,0.16)',
+    color: '#2b1a12',
   },
 
   summaryTitle: {
     margin: '0 0 10px',
     fontSize: '16px',
-    fontWeight: 800,
-    color: '#0B1A33',
+    fontWeight: 900,
+    color: '#2b1a12',
+    letterSpacing: '0.02em',
   },
 
   summaryRow: {
     display: 'flex',
     justifyContent: 'space-between',
-    padding: '6px 0',
+    padding: '7px 0',
     fontSize: '13px',
-    borderBottom: '1px dashed rgba(209,213,219,0.9)',
-    color: '#4B5563',
+    borderBottom: '1px dashed rgba(122,74,46,0.22)',
+    color: 'rgba(43,26,18,0.74)',
   },
 
   summaryTotalRow: {
-    fontWeight: 800,
-    color: '#0B1A33',
+    fontWeight: 900,
+    color: '#2b1a12',
   },
 
   summaryPrimaryBtn: {
@@ -1208,13 +1244,14 @@ const styles = {
     marginTop: '14px',
     padding: '11px',
     borderRadius: '999px',
-    border: 'none',
-    backgroundImage: 'linear-gradient(135deg, #0A3D91, #1E5FE0)',
-    color: '#F9FAFF',
-    fontWeight: 800,
+    border: '1px solid rgba(212,175,55,0.35)',
+    backgroundImage: 'linear-gradient(135deg, #7a4a2e, #d4af37)',
+    color: '#fff8e1',
+    fontWeight: 900,
     fontSize: '13px',
     cursor: 'pointer',
-    boxShadow: '0 14px 30px rgba(37,99,235,0.55)',
+    boxShadow: '0 16px 34px rgba(43,26,18,0.22)',
+    letterSpacing: '0.02em',
   },
 
   summarySecondaryBtn: {
@@ -1222,21 +1259,28 @@ const styles = {
     marginTop: '8px',
     padding: '9px',
     borderRadius: '999px',
-    border: '1px solid #CBD5F5',
+    border: '1px solid rgba(122,74,46,0.26)',
     backgroundColor: 'transparent',
-    color: '#0A3D91',
-    fontWeight: 600,
+    color: '#7a4a2e',
+    fontWeight: 900,
     fontSize: '13px',
     cursor: 'pointer',
   },
 
+  summaryNote: {
+    marginTop: 12,
+    fontSize: '12px',
+    color: 'rgba(43,26,18,0.62)',
+    textAlign: 'center',
+  },
+
   emptyBox: {
     marginTop: '10px',
-    backgroundColor: '#F9FAFB',
-    borderRadius: '20px',
+    backgroundColor: 'rgba(255,255,255,0.72)',
+    borderRadius: '22px',
     padding: '24px 20px',
     textAlign: 'center',
-    border: '1px dashed rgba(209,213,219,0.9)',
+    border: '1px dashed rgba(122,74,46,0.22)',
   },
 
   emptyIcon: {
@@ -1247,33 +1291,34 @@ const styles = {
   emptyTitle: {
     margin: '8px 0 2px',
     fontSize: '16px',
-    fontWeight: 700,
-    color: '#0B1A33',
+    fontWeight: 900,
+    color: '#2b1a12',
   },
 
   emptyText: {
     margin: 0,
     fontSize: '13px',
-    color: '#4B5563',
+    color: 'rgba(43,26,18,0.70)',
+    lineHeight: 1.55,
   },
 
   backBtn: {
     marginTop: '14px',
-    padding: '9px 16px',
+    padding: '10px 16px',
     borderRadius: '999px',
-    border: 'none',
-    backgroundImage: 'linear-gradient(135deg, #0A3D91, #1E5FE0)',
-    color: '#F9FAFF',
-    fontWeight: 700,
+    border: '1px solid rgba(212,175,55,0.35)',
+    backgroundImage: 'linear-gradient(135deg, #7a4a2e, #d4af37)',
+    color: '#fff8e1',
+    fontWeight: 900,
     cursor: 'pointer',
     fontSize: '13px',
-    boxShadow: '0 10px 22px rgba(37,99,235,0.55)',
+    boxShadow: '0 14px 28px rgba(43,26,18,0.20)',
   },
 
   modalOverlay: {
     position: 'fixed',
     inset: 0,
-    backgroundColor: 'rgba(15,23,42,0.45)',
+    backgroundColor: 'rgba(43,26,18,0.55)',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -1283,52 +1328,166 @@ const styles = {
 
   modal: {
     width: '100%',
-    maxWidth: '420px',
-    borderRadius: '20px',
-    padding: '18px 20px 18px',
-    backgroundColor: '#FFFFFF',
-    boxShadow: '0 24px 60px rgba(15,23,42,0.3)',
-    border: '1px solid rgba(191,219,254,0.95)',
-    color: '#0B1A33',
+    maxWidth: '460px',
+    borderRadius: '22px',
+    padding: '16px 16px 16px',
+    backgroundColor: 'rgba(255,255,255,0.90)',
+    backdropFilter: 'blur(12px)',
+    WebkitBackdropFilter: 'blur(12px)',
+    boxShadow: '0 24px 70px rgba(0,0,0,0.35)',
+    border: '1px solid rgba(212,175,55,0.28)',
+    color: '#2b1a12',
   },
 
   modalHeader: {
     display: 'flex',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'space-between',
     gap: '10px',
-    marginBottom: '8px',
+    marginBottom: '10px',
+  },
+
+  modalKicker: {
+    margin: 0,
+    fontSize: '11px',
+    textTransform: 'uppercase',
+    letterSpacing: '0.18em',
+    color: '#7a4a2e',
+    fontWeight: 900,
   },
 
   modalTitle: {
-    margin: 0,
+    margin: '4px 0 0',
     fontSize: '16px',
-    fontWeight: 800,
-    color: '#0B1A33',
+    fontWeight: 900,
+    color: '#2b1a12',
   },
 
   modalClose: {
-    border: 'none',
-    background: 'transparent',
-    fontSize: '20px',
+    border: '1px solid rgba(122,74,46,0.18)',
+    background: 'rgba(255,255,255,0.72)',
+    width: 36,
+    height: 36,
+    borderRadius: 12,
     cursor: 'pointer',
-    color: '#6B7280',
+    fontWeight: 900,
+    color: 'rgba(43,26,18,0.85)',
+    boxShadow: '0 10px 18px rgba(43,26,18,0.10)',
+  },
+
+  modalBody: {
+    marginTop: 4,
+  },
+
+  modalTextStrong: {
+    margin: '6px 0 10px',
+    fontSize: '14px',
+    fontWeight: 900,
+    color: '#2b1a12',
   },
 
   modalText: {
     margin: '6px 0',
     fontSize: '13px',
-    color: '#4B5563',
+    color: 'rgba(43,26,18,0.72)',
+    lineHeight: 1.55,
+  },
+
+  modalInfoGrid: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr',
+    gap: '10px',
+    marginTop: '10px',
+  },
+
+  modalInfoItem: {
+    borderRadius: '14px',
+    padding: '10px 12px',
+    backgroundColor: 'rgba(212,175,55,0.10)',
+    border: '1px solid rgba(212,175,55,0.20)',
+  },
+
+  modalInfoLabel: {
+    display: 'block',
+    fontSize: '11px',
+    textTransform: 'uppercase',
+    letterSpacing: '0.14em',
+    color: 'rgba(43,26,18,0.66)',
+    fontWeight: 900,
+    marginBottom: 6,
   },
 
   modalChip: {
-    display: 'inline-block',
-    padding: '3px 8px',
+    display: 'inline-flex',
+    alignItems: 'center',
+    padding: '6px 10px',
     borderRadius: '999px',
-    backgroundColor: '#EFF6FF',
-    color: '#1D4ED8',
+    backgroundColor: 'rgba(255,255,255,0.78)',
+    border: '1px solid rgba(122,74,46,0.18)',
+    color: '#7a4a2e',
     fontSize: '11px',
-    fontWeight: 600,
+    fontWeight: 900,
+  },
+
+  modalTotalPill: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    padding: '6px 10px',
+    borderRadius: '999px',
+    backgroundImage: 'linear-gradient(135deg, #7a4a2e, #d4af37)',
+    border: '1px solid rgba(212,175,55,0.35)',
+    color: '#fff8e1',
+    fontSize: '11px',
+    fontWeight: 900,
+  },
+
+  modalPrimaryBtn: {
+    width: '100%',
+    marginTop: '14px',
+    padding: '11px',
+    borderRadius: '999px',
+    border: '1px solid rgba(212,175,55,0.35)',
+    backgroundImage: 'linear-gradient(135deg, #7a4a2e, #d4af37)',
+    color: '#fff8e1',
+    fontWeight: 900,
+    fontSize: '13px',
+    cursor: 'pointer',
+    boxShadow: '0 16px 34px rgba(43,26,18,0.22)',
+    letterSpacing: '0.02em',
+  },
+
+  modalSummaryBar: {
+    marginTop: 8,
+    marginBottom: 10,
+    borderRadius: '16px',
+    padding: '10px 12px',
+    backgroundColor: 'rgba(212,175,55,0.10)',
+    border: '1px solid rgba(212,175,55,0.20)',
+  },
+
+  modalSummaryTitle: {
+    fontWeight: 900,
+    color: '#2b1a12',
+    fontSize: '13px',
+  },
+
+  modalSummaryMeta: {
+    marginTop: 8,
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+
+  modalMiniPill: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    padding: '6px 10px',
+    borderRadius: '999px',
+    backgroundColor: 'rgba(255,255,255,0.78)',
+    border: '1px solid rgba(122,74,46,0.18)',
+    color: '#7a4a2e',
+    fontSize: '11px',
+    fontWeight: 900,
   },
 
   modalField: {
@@ -1338,44 +1497,40 @@ const styles = {
 
   modalLabel: {
     display: 'block',
-    marginBottom: '4px',
+    marginBottom: '6px',
     fontSize: '12px',
-    fontWeight: 600,
-    color: '#0B1A33',
+    fontWeight: 900,
+    color: 'rgba(43,26,18,0.88)',
+    letterSpacing: '0.02em',
   },
 
   modalInput: {
     width: '100%',
-    padding: '8px 10px',
-    borderRadius: '10px',
-    border: '1px solid #CBD5F5',
+    padding: '10px 12px',
+    borderRadius: '12px',
+    border: '1px solid rgba(122,74,46,0.20)',
     fontSize: '13px',
-    backgroundColor: '#F9FAFB',
-    color: '#0B1A33',
+    backgroundColor: 'rgba(255,255,255,0.86)',
+    color: '#2b1a12',
     outline: 'none',
-  },
-
-  modalPrimaryBtn: {
-    width: '100%',
-    marginTop: '14px',
-    padding: '10px',
-    borderRadius: '999px',
-    border: 'none',
-    backgroundImage: 'linear-gradient(135deg, #0A3D91, #1E5FE0)',
-    color: '#F9FAFF',
-    fontWeight: 800,
-    fontSize: '13px',
-    cursor: 'pointer',
-    boxShadow: '0 10px 24px rgba(37,99,235,0.55)',
   },
 
   /* Card form styles (inside modal) */
   cardForm: {
     marginTop: '10px',
-    padding: '10px 10px 14px',
-    borderRadius: '8px',
-    border: '1px solid #d7d7d7',
-    backgroundColor: '#FFFFFF',
+    padding: '12px 12px 12px',
+    borderRadius: '18px',
+    border: '1px solid rgba(122,74,46,0.14)',
+    backgroundColor: 'rgba(255,255,255,0.78)',
+    boxShadow: '0 14px 30px rgba(43,26,18,0.10)',
+  },
+
+  cardFormTopLine: {
+    height: 1,
+    width: '100%',
+    marginBottom: 12,
+    background:
+      'linear-gradient(90deg, transparent, rgba(212,175,55,0.70), transparent)',
   },
 
   cardField: {
@@ -1385,19 +1540,22 @@ const styles = {
   cardLabel: {
     display: 'block',
     fontSize: '12px',
-    fontWeight: 600,
-    color: '#3b3b3b',
-    marginBottom: '4px',
+    fontWeight: 900,
+    color: 'rgba(43,26,18,0.80)',
+    marginBottom: '6px',
+    letterSpacing: '0.02em',
   },
 
   cardInput: {
     width: '100%',
-    height: '40px',
-    padding: '0 10px',
+    height: '42px',
+    padding: '0 12px',
     fontSize: '13px',
-    borderRadius: '4px',
-    border: '1px solid #d7d7d7',
+    borderRadius: '12px',
+    border: '1px solid rgba(122,74,46,0.20)',
     outline: 'none',
+    backgroundColor: 'rgba(255,255,255,0.86)',
+    color: '#2b1a12',
   },
 
   cardNumberRow: {
@@ -1406,63 +1564,66 @@ const styles = {
     gap: '6px',
   },
 
-  cardLogos: {
-    display: 'flex',
-    gap: '4px',
-    fontSize: '10px',
-    fontWeight: 600,
-    alignItems: 'center',
-    whiteSpace: 'nowrap',
-  },
-
-  cardLogoPill: {
-    padding: '3px 6px',
-    borderRadius: '12px',
-    border: '1px solid #ddd',
-    backgroundColor: '#fff',
-  },
-
   cardRow: {
     display: 'flex',
     gap: '10px',
   },
 
-  infoIcon: {
-    display: 'inline-block',
-    marginLeft: '4px',
-    width: '16px',
-    height: '16px',
-    borderRadius: '50%',
-    border: '2px solid #4caf50',
-    color: '#4caf50',
-    fontSize: '10px',
-    textAlign: 'center',
-    lineHeight: '12px',
-    fontWeight: 700,
-  },
-
-  checkboxRow: {
+  payNote: {
+    marginTop: 10,
     display: 'flex',
     alignItems: 'center',
-    gap: '8px',
-    margin: '10px 0 8px',
+    gap: 8,
     fontSize: '12px',
-    fontWeight: 600,
-    color: '#3b3b3b',
+    color: 'rgba(43,26,18,0.62)',
+  },
+
+  payNoteDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 999,
+    backgroundColor: '#d4af37',
+    boxShadow: '0 0 0 3px rgba(212,175,55,0.18)',
+  },
+
+  modalTotalRow: {
+    marginTop: 12,
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderRadius: '16px',
+    padding: '10px 12px',
+    backgroundColor: 'rgba(212,175,55,0.10)',
+    border: '1px solid rgba(212,175,55,0.20)',
+  },
+
+  modalTotalLabel: {
+    fontSize: '12px',
+    fontWeight: 900,
+    color: 'rgba(43,26,18,0.72)',
+    textTransform: 'uppercase',
+    letterSpacing: '0.14em',
+  },
+
+  modalTotalValue: {
+    fontSize: '14px',
+    fontWeight: 900,
+    color: '#7a4a2e',
   },
 
   payBtn: {
     marginTop: '12px',
     width: '100%',
-    height: '44px',
-    border: 'none',
+    height: '46px',
+    border: '1px solid rgba(212,175,55,0.35)',
     borderRadius: '999px',
-    backgroundImage: 'linear-gradient(135deg, #0A3D91, #1E5FE0)',
-    color: '#ffffff',
+    backgroundImage: 'linear-gradient(135deg, #7a4a2e, #d4af37)',
+    color: '#fff8e1',
     fontSize: '14px',
-    fontWeight: 700,
+    fontWeight: 900,
     cursor: 'pointer',
-    boxShadow: '0 10px 24px rgba(15,23,42,0.35)',
+    boxShadow: '0 16px 34px rgba(43,26,18,0.22)',
+    letterSpacing: '0.02em',
   },
 
   cancelLink: {
@@ -1470,9 +1631,9 @@ const styles = {
     width: '100%',
     background: 'transparent',
     border: 'none',
-    color: '#0A3D91',
+    color: '#7a4a2e',
     fontSize: '13px',
-    fontWeight: 600,
+    fontWeight: 900,
     cursor: 'pointer',
     textAlign: 'center',
     textDecoration: 'underline',
@@ -1482,30 +1643,48 @@ const styles = {
   /* Invoice styles */
   invoiceCard: {
     width: '100%',
-    maxWidth: '720px',
-    backgroundColor: '#FFFFFF',
-    padding: '28px 30px 24px',
-    borderRadius: '12px',
-    boxShadow: '0 24px 60px rgba(15,23,42,0.3)',
-    border: '1px solid rgba(209,213,219,0.9)',
-    color: '#0B1A33',
+    maxWidth: '760px',
+    backgroundColor: 'rgba(255,255,255,0.92)',
+    backdropFilter: 'blur(12px)',
+    WebkitBackdropFilter: 'blur(12px)',
+    padding: '26px 28px 22px',
+    borderRadius: '18px',
+    boxShadow: '0 24px 70px rgba(0,0,0,0.35)',
+    border: '1px solid rgba(212,175,55,0.28)',
+    color: '#2b1a12',
+    position: 'relative',
+    overflow: 'hidden',
+  },
+
+  invoiceTopBar: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 6,
+    backgroundImage: 'linear-gradient(90deg, #7a4a2e, #d4af37)',
   },
 
   invoiceHeaderRow: {
     display: 'flex',
     justifyContent: 'space-between',
     marginBottom: '18px',
+    gap: 12,
   },
 
   invoiceTitle: {
-    margin: '0 0 4px',
-    color: '#1a67d1',
+    margin: '0 0 6px',
+    color: '#7a4a2e',
     fontSize: '20px',
+    fontWeight: 900,
+    letterSpacing: '0.04em',
+    textTransform: 'uppercase',
   },
 
   invoiceMuted: {
-    color: '#8b8b8b',
+    color: 'rgba(43,26,18,0.62)',
     fontSize: '12px',
+    lineHeight: 1.45,
   },
 
   invoiceTable: {
@@ -1516,16 +1695,21 @@ const styles = {
 
   invoiceTh: {
     textAlign: 'left',
-    fontSize: '13px',
+    fontSize: '12px',
     paddingBottom: '8px',
-    borderBottom: '1px solid #e2e2e2',
+    borderBottom: '1px solid rgba(122,74,46,0.18)',
+    color: 'rgba(43,26,18,0.72)',
+    textTransform: 'uppercase',
+    letterSpacing: '0.14em',
+    fontWeight: 900,
   },
 
   invoiceTd: {
     padding: '10px 0',
     fontSize: '13px',
-    borderBottom: '1px solid #e2e2e2',
+    borderBottom: '1px solid rgba(122,74,46,0.14)',
     verticalAlign: 'top',
+    color: '#2b1a12',
   },
 
   invoiceRight: {
@@ -1533,22 +1717,25 @@ const styles = {
   },
 
   invoiceSectionTitle: {
-    marginTop: '22px',
-    fontWeight: 700,
-    fontSize: '13px',
+    marginTop: '18px',
+    fontWeight: 900,
+    fontSize: '12px',
+    textTransform: 'uppercase',
+    letterSpacing: '0.14em',
+    color: '#7a4a2e',
   },
 
   thankYouBtn: {
     marginTop: '18px',
-    padding: '10px 18px',
+    padding: '11px 18px',
     borderRadius: '999px',
-    border: 'none',
-    backgroundColor: '#0A3D91',
-    color: '#F9FAFF',
-    fontWeight: 700,
+    border: '1px solid rgba(212,175,55,0.35)',
+    backgroundImage: 'linear-gradient(135deg, #7a4a2e, #d4af37)',
+    color: '#fff8e1',
+    fontWeight: 900,
     cursor: 'pointer',
     fontSize: '13px',
-    boxShadow: '0 10px 22px rgba(37,99,235,0.55)',
+    boxShadow: '0 16px 34px rgba(43,26,18,0.22)',
     display: 'block',
     marginLeft: 'auto',
   },

@@ -1,20 +1,19 @@
 // src/pages/BookingRequests.jsx
 
-import React, { useState, useEffect } from 'react';
-import Navbar from '../components/Navbar';
-import Swal from 'sweetalert2';
-import { useSelector } from 'react-redux';
+import React, { useState, useEffect } from "react";
+import Navbar from "../components/Navbar"; // ✅ ALWAYS use your Navbar.jsx
+import Swal from "sweetalert2";
+import { useSelector } from "react-redux";
 
 const BookingRequests = () => {
   const [requests, setRequests] = useState([]);
   const [filteredRequests, setFilteredRequests] = useState([]);
-  const [filterStatus, setFilterStatus] = useState('all');
+  const [filterStatus, setFilterStatus] = useState("all");
 
   const user = useSelector((state) => state.users.user);
   const API_URL = process.env.REACT_APP_SERVER_URL;
 
-  const isManagerLike =
-    user && (user.role === 'owner' || user.role === 'staff'); // ✅ owner OR staff
+  const isManagerLike = user && (user.role === "owner" || user.role === "staff");
 
   // 🔹 Fetch bookings for this owner/staff (by ownerId)
   const fetchRequests = async (ownerId) => {
@@ -24,7 +23,7 @@ const BookingRequests = () => {
       const res = await fetch(`${API_URL}/api/bookings/owner/${ownerId}`);
 
       if (!res.ok) {
-        console.error('Failed to fetch booking requests, status:', res.status);
+        console.error("Failed to fetch booking requests, status:", res.status);
         setRequests([]);
         setFilteredRequests([]);
         return;
@@ -35,7 +34,9 @@ const BookingRequests = () => {
       setRequests(arr);
       setFilteredRequests(arr);
     } catch (error) {
-      console.error('Error fetching booking requests:', error);
+      console.error("Error fetching booking requests:", error);
+      setRequests([]);
+      setFilteredRequests([]);
     }
   };
 
@@ -48,40 +49,33 @@ const BookingRequests = () => {
 
   const handleUpdateStatus = async (id, newStatus) => {
     const result = await Swal.fire({
-      title: 'Are you sure?',
-      text: `You want to ${newStatus.toLowerCase()} this booking?`,
-      icon: 'warning',
+      title: "Are you sure?",
+      text: `You want to ${String(newStatus).toLowerCase()} this booking?`,
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#1e5fe0', // 🔵 blue theme
-      cancelButtonColor: '#6b7280',
+      confirmButtonColor: "#d4af37", // ✅ gold theme
+      cancelButtonColor: "#7a4a2e",
       confirmButtonText: `Yes, ${newStatus}!`,
     });
 
     if (result.isConfirmed) {
       try {
         const res = await fetch(`${API_URL}/api/bookings/${id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ status: newStatus }),
         });
 
         const data = await res.json();
         if (res.ok) {
-          Swal.fire('Updated', 'Guest booking status updated.', 'success');
-          // 🔁 reload bookings for this owner
-          if (user?._id) {
-            fetchRequests(user._id);
-          }
+          Swal.fire("Updated", "Guest booking status updated.", "success");
+          if (user?._id) fetchRequests(user._id);
         } else {
-          Swal.fire(
-            'Error',
-            data.message || 'Error updating booking.',
-            'error'
-          );
+          Swal.fire("Error", data.message || "Error updating booking.", "error");
         }
       } catch (error) {
-        console.error('Error updating booking:', error);
-        Swal.fire('Error', 'Error updating booking.', 'error');
+        console.error("Error updating booking:", error);
+        Swal.fire("Error", "Error updating booking.", "error");
       }
     }
   };
@@ -90,45 +84,36 @@ const BookingRequests = () => {
     const status = e.target.value;
     setFilterStatus(status);
 
-    if (status === 'all') {
+    if (status === "all") {
       setFilteredRequests(requests);
     } else {
       setFilteredRequests(
-        requests.filter(
-          (req) => (req.status || '').toLowerCase() === status
-        )
+        requests.filter((req) => (req.status || "").toLowerCase() === status)
       );
     }
   };
 
   const getStatusBadgeStyle = (statusRaw) => {
-    const status = (statusRaw || '').toLowerCase();
-    if (status === 'approved') {
-      return { ...styles.badge, ...styles.badgeApproved };
-    }
-    if (status === 'rejected') {
-      return { ...styles.badge, ...styles.badgeRejected };
-    }
+    const status = (statusRaw || "").toLowerCase();
+    if (status === "approved") return { ...styles.badge, ...styles.badgeApproved };
+    if (status === "rejected") return { ...styles.badge, ...styles.badgeRejected };
     return { ...styles.badge, ...styles.badgePending };
   };
 
   const formatStatus = (statusRaw) => {
-    if (!statusRaw) return 'Pending';
-    return (
-      statusRaw.charAt(0).toUpperCase() +
-      statusRaw.slice(1).toLowerCase()
-    );
+    if (!statusRaw) return "Pending";
+    return statusRaw.charAt(0).toUpperCase() + statusRaw.slice(1).toLowerCase();
   };
 
   const total = requests.length;
   const pendingCount = requests.filter(
-    (r) => (r.status || '').toLowerCase() === 'pending'
+    (r) => (r.status || "").toLowerCase() === "pending"
   ).length;
   const approvedCount = requests.filter(
-    (r) => (r.status || '').toLowerCase() === 'approved'
+    (r) => (r.status || "").toLowerCase() === "approved"
   ).length;
   const rejectedCount = requests.filter(
-    (r) => (r.status || '').toLowerCase() === 'rejected'
+    (r) => (r.status || "").toLowerCase() === "rejected"
   ).length;
 
   // ❌ If not logged in or not owner/staff
@@ -154,6 +139,7 @@ const BookingRequests = () => {
   return (
     <>
       <Navbar />
+
       <div style={styles.page}>
         <div style={styles.wrapper}>
           {/* Header band */}
@@ -188,14 +174,17 @@ const BookingRequests = () => {
               <p style={styles.cardLabel}>Total requests</p>
               <div style={styles.metric}>{total}</div>
             </div>
+
             <div style={{ ...styles.card, ...styles.cardPending }}>
               <p style={styles.cardLabel}>Pending</p>
               <div style={styles.metric}>{pendingCount}</div>
             </div>
+
             <div style={{ ...styles.card, ...styles.cardApproved }}>
               <p style={styles.cardLabel}>Approved</p>
               <div style={styles.metric}>{approvedCount}</div>
             </div>
+
             <div style={{ ...styles.card, ...styles.cardRejected }}>
               <p style={styles.cardLabel}>Rejected</p>
               <div style={styles.metric}>{rejectedCount}</div>
@@ -238,6 +227,7 @@ const BookingRequests = () => {
                       <th style={styles.thCenter}>Action</th>
                     </tr>
                   </thead>
+
                   <tbody>
                     {filteredRequests.map((req, idx) => (
                       <tr
@@ -248,73 +238,67 @@ const BookingRequests = () => {
                         <td style={styles.tdRoom}>
                           <div style={styles.roomCellInner}>
                             <div style={styles.imageShell}>
-                              {req.image && (
+                              {req.image ? (
                                 <img
                                   src={`${API_URL}/assets/images/${req.image}`}
-                                  alt={req.roomName}
+                                  alt={req.roomName || "Room"}
                                   style={styles.image}
                                 />
+                              ) : (
+                                <div style={styles.noImg}>No photo</div>
                               )}
                             </div>
                             <div>
-                              <div style={styles.roomName}>{req.roomName}</div>
+                              <div style={styles.roomName}>{req.roomName || "Room"}</div>
                               <div style={styles.roomMeta}>
-                                Booking ID: {req._id?.slice(-6) || 'N/A'}
+                                Booking ID: {req._id?.slice(-6) || "N/A"}
                               </div>
                             </div>
                           </div>
                         </td>
 
-                        {/* backend adds customerName in getBookingsByOwner */}
+                        {/* Guest */}
                         <td style={styles.td}>
-                          <span style={styles.guestName}>
-                            {req.customerName || 'Guest'}
-                          </span>
+                          <span style={styles.guestName}>{req.customerName || "Guest"}</span>
                         </td>
 
-                        <td style={styles.tdCenter}>{req.stayDuration}</td>
+                        {/* Stay */}
+                        <td style={styles.tdCenter}>{req.stayDuration || "—"}</td>
 
+                        {/* Amount */}
                         <td style={styles.tdCenter}>
                           <span style={styles.amountChip}>
                             {Number(req.totalCost || 0).toFixed(2)} OMR
                           </span>
                         </td>
 
+                        {/* Status */}
                         <td style={styles.tdCenter}>
                           <span style={getStatusBadgeStyle(req.status)}>
                             {formatStatus(req.status)}
                           </span>
                         </td>
 
+                        {/* Action */}
                         <td style={styles.tdCenter}>
-                          {(req.status || '').toLowerCase() === 'pending' ? (
+                          {(req.status || "").toLowerCase() === "pending" ? (
                             <div style={styles.actionButtons}>
                               <button
-                                style={{
-                                  ...styles.smallBtn,
-                                  ...styles.smallBtnApprove,
-                                }}
+                                style={{ ...styles.smallBtn, ...styles.smallBtnApprove }}
                                 type="button"
-                                onClick={() =>
-                                  handleUpdateStatus(req._id, 'Approved')
-                                }
+                                onClick={() => handleUpdateStatus(req._id, "Approved")}
                               >
                                 Approve
                               </button>
                               <button
-                                style={{
-                                  ...styles.smallBtn,
-                                  ...styles.smallBtnReject,
-                                }}
+                                style={{ ...styles.smallBtn, ...styles.smallBtnReject }}
                                 type="button"
-                                onClick={() =>
-                                  handleUpdateStatus(req._id, 'Rejected')
-                                }
+                                onClick={() => handleUpdateStatus(req._id, "Rejected")}
                               >
                                 Reject
                               </button>
                             </div>
-                          ) : (req.status || '').toLowerCase() === 'approved' ? (
+                          ) : (req.status || "").toLowerCase() === "approved" ? (
                             <span style={styles.statusIconOK}>✔</span>
                           ) : (
                             <span style={styles.statusIconReject}>✕</span>
@@ -335,384 +319,335 @@ const BookingRequests = () => {
 
 const styles = {
   page: {
-    minHeight: '100vh',
-    backgroundColor: '#f3f6fb',
+    minHeight: "100vh",
+    backgroundColor: "#faf6f1",
     backgroundImage:
-      'radial-gradient(circle at top right, rgba(148,163,253,0.35), transparent 55%), ' +
-      'radial-gradient(circle at bottom left, rgba(56,189,248,0.18), transparent 55%)',
+      "radial-gradient(circle at top right, rgba(226, 184, 44, 0.35), transparent 55%), " +
+      "radial-gradient(circle at bottom left, rgba(212,175,55,0.25), transparent 55%)",
   },
   wrapper: {
-    maxWidth: '1120px',
-    margin: '0 auto',
-    padding: '22px 16px 40px',
+    maxWidth: "1120px",
+    margin: "0 auto",
+    padding: "22px 16px 40px",
   },
 
   // Header band
   headerBand: {
-    marginBottom: '18px',
-    padding: '16px 16px 14px',
-    borderRadius: '18px',
-    border: '1px solid rgba(15,23,42,0.06)',
+    marginBottom: "18px",
+    padding: "16px 16px 14px",
+    borderRadius: "18px",
+    border: "1px solid rgba(212,175,55,0.35)",
     backgroundImage:
-      'radial-gradient(circle at top, rgba(148,163,253,0.28), transparent 55%), ' +
-      'linear-gradient(145deg, #0a3d91, #1e5fe0)',
-    boxShadow: '0 18px 38px rgba(15,23,42,0.22)',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    gap: '16px',
-    color: '#f9fafb',
-    flexWrap: 'wrap',
+      "radial-gradient(circle at top, rgba(245,210,122,0.28), transparent 55%), " +
+      "linear-gradient(145deg, #8a5a24, #5e3418)",
+    boxShadow: "0 18px 38px rgba(61,42,20,0.18)",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: "16px",
+    color: "#fffaf3",
+    flexWrap: "wrap",
   },
   headerKicker: {
     margin: 0,
-    fontSize: '11px',
-    textTransform: 'uppercase',
-    letterSpacing: '0.16em',
-    color: '#bfdbfe',
+    fontSize: "11px",
+    textTransform: "uppercase",
+    letterSpacing: "0.16em",
+    color: "#f5d27a",
   },
   title: {
-    margin: '4px 0 4px',
-    fontSize: '22px',
-    fontWeight: 800,
-    letterSpacing: '0.04em',
-    textTransform: 'uppercase',
-    color: '#f9fafb',
+    margin: "4px 0 4px",
+    fontSize: "22px",
+    fontWeight: 900,
+    letterSpacing: "0.04em",
+    textTransform: "uppercase",
+    color: "#fffaf3",
   },
   subtitle: {
     margin: 0,
-    fontSize: '13px',
-    color: '#e5e7eb',
+    fontSize: "13px",
+    color: "#f3e6d8",
     opacity: 0.95,
   },
 
   filterBox: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
-    padding: '8px 12px',
-    borderRadius: '999px',
-    backgroundColor: '#eff6ff',
-    border: '1px solid rgba(37,99,235,0.35)',
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    padding: "8px 12px",
+    borderRadius: "999px",
+    backgroundColor: "rgba(255,255,255,0.12)",
+    border: "1px solid rgba(245,210,122,0.35)",
+    backdropFilter: "blur(6px)",
   },
   filterLabel: {
-    fontSize: '0.78rem',
-    color: '#1e3a8a',
+    fontSize: "0.78rem",
+    color: "#fffaf3",
+    fontWeight: 800,
+    whiteSpace: "nowrap",
   },
   select: {
-    padding: '6px 10px',
-    borderRadius: '999px',
-    border: 'none',
-    backgroundColor: '#1e40af',
-    color: '#f9fafb',
-    fontSize: '0.8rem',
-    outline: 'none',
-    cursor: 'pointer',
+    padding: "6px 10px",
+    borderRadius: "999px",
+    border: "1px solid rgba(255,255,255,0.18)",
+    backgroundColor: "rgba(61,42,20,0.55)",
+    color: "#fffaf3",
+    fontSize: "0.82rem",
+    outline: "none",
+    cursor: "pointer",
+    fontWeight: 800,
   },
 
   // Cards
   cardsGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
-    gap: '14px',
-    marginBottom: '20px',
+    display: "grid",
+    gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
+    gap: "14px",
+    marginBottom: "20px",
   },
   card: {
-    borderRadius: '16px',
-    padding: '14px 14px 12px',
-    border: '1px solid rgba(15,23,42,0.06)',
-    boxShadow: '0 10px 22px rgba(15,23,42,0.12)',
-    color: '#0b1a33',
-    backgroundColor: '#ffffff',
+    borderRadius: "16px",
+    padding: "14px 14px 12px",
+    border: "1px solid rgba(212,175,55,0.24)",
+    boxShadow: "0 10px 22px rgba(61,42,20,0.10)",
+    color: "#3d2a14",
+    backgroundColor: "#ffffff",
   },
   cardTotal: {
     backgroundImage:
-      'radial-gradient(circle at top, rgba(191,219,254,0.45), transparent 55%), ' +
-      'linear-gradient(145deg, #ffffff, #f5f7ff)',
+      "radial-gradient(circle at top, rgba(212,175,55,0.22), transparent 55%), " +
+      "linear-gradient(145deg, #ffffff, #fffaf3)",
   },
   cardPending: {
     backgroundImage:
-      'radial-gradient(circle at top, rgba(254,240,138,0.55), transparent 55%), ' +
-      'linear-gradient(145deg, #ffffff, #fefce8)',
+      "radial-gradient(circle at top, rgba(234,179,8,0.22), transparent 55%), " +
+      "linear-gradient(145deg, #ffffff, #fff7e6)",
   },
   cardApproved: {
     backgroundImage:
-      'radial-gradient(circle at top, rgba(187,247,208,0.65), transparent 55%), ' +
-      'linear-gradient(145deg, #ffffff, #ecfdf5)',
+      "radial-gradient(circle at top, rgba(34,197,94,0.16), transparent 55%), " +
+      "linear-gradient(145deg, #ffffff, #f3fff7)",
   },
   cardRejected: {
     backgroundImage:
-      'radial-gradient(circle at top, rgba(254,202,202,0.6), transparent 55%), ' +
-      'linear-gradient(145deg, #ffffff, #fef2f2)',
+      "radial-gradient(circle at top, rgba(239,68,68,0.16), transparent 55%), " +
+      "linear-gradient(145deg, #ffffff, #fff5f5)",
   },
   cardLabel: {
     margin: 0,
-    marginBottom: '4px',
-    fontSize: '0.78rem',
-    color: '#4b5563',
-    opacity: 0.9,
-    textTransform: 'uppercase',
-    letterSpacing: '0.08em',
+    marginBottom: "4px",
+    fontSize: "0.78rem",
+    color: "#6b5a3c",
+    opacity: 0.95,
+    textTransform: "uppercase",
+    letterSpacing: "0.08em",
+    fontWeight: 900,
   },
   metric: {
-    fontSize: '1.7rem',
+    fontSize: "1.7rem",
     fontWeight: 900,
-    color: '#0f172a',
+    color: "#3d2a14",
   },
 
   // Panel + table
   panel: {
-    borderRadius: '20px',
-    border: '1px solid rgba(15,23,42,0.06)',
-    padding: '16px 16px 14px',
-    backgroundColor: '#ffffff',
-    boxShadow: '0 18px 40px rgba(15,23,42,0.12)',
-    color: '#0b1a33',
+    borderRadius: "20px",
+    border: "1px solid rgba(212,175,55,0.24)",
+    padding: "16px 16px 14px",
+    backgroundColor: "#ffffff",
+    boxShadow: "0 18px 40px rgba(61,42,20,0.10)",
+    color: "#3d2a14",
   },
   panelHeaderRow: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    gap: '12px',
-    marginBottom: '10px',
-    flexWrap: 'wrap',
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: "12px",
+    marginBottom: "10px",
+    flexWrap: "wrap",
   },
   panelTitle: {
     margin: 0,
-    fontSize: '1rem',
-    fontWeight: 800,
+    fontSize: "1rem",
+    fontWeight: 900,
+    color: "#3d2a14",
   },
   panelSubtitle: {
-    marginTop: '4px',
+    marginTop: "4px",
     marginBottom: 0,
-    fontSize: '0.85rem',
-    color: '#6b7280',
+    fontSize: "0.85rem",
+    color: "#6b5a3c",
     opacity: 0.95,
+    fontWeight: 700,
   },
   queueChip: {
-    borderRadius: '999px',
-    padding: '6px 12px',
-    backgroundColor: '#eff6ff',
-    border: '1px solid rgba(37,99,235,0.35)',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '6px',
-    fontSize: '0.8rem',
+    borderRadius: "999px",
+    padding: "6px 12px",
+    backgroundColor: "rgba(212,175,55,0.14)",
+    border: "1px solid rgba(212,175,55,0.24)",
+    display: "flex",
+    alignItems: "center",
+    gap: "6px",
+    fontSize: "0.8rem",
   },
   queueChipLabel: {
-    color: '#1e3a8a',
+    color: "#6b5a3c",
+    fontWeight: 900,
   },
   queueChipNumber: {
-    fontWeight: 800,
-    color: '#1d4ed8',
+    fontWeight: 900,
+    color: "#5a3a1a",
   },
 
-  tableWrapper: {
-    width: '100%',
-    overflowX: 'auto',
-    marginTop: '6px',
-  },
-  table: {
-    width: '100%',
-    borderCollapse: 'collapse',
-    borderRadius: '14px',
-    overflow: 'hidden',
-  },
+  tableWrapper: { width: "100%", overflowX: "auto", marginTop: "6px" },
+  table: { width: "100%", borderCollapse: "collapse", borderRadius: "14px", overflow: "hidden" },
+
   thRoom: {
-    textAlign: 'left',
-    padding: '10px 12px',
-    fontSize: '0.8rem',
-    color: '#e5f0ff',
-    borderBottom: '1px solid rgba(148,163,184,0.4)',
-    backgroundColor: '#0f172a',
+    textAlign: "left",
+    padding: "10px 12px",
+    fontSize: "0.8rem",
+    color: "#fffaf3",
+    borderBottom: "1px solid rgba(245,210,122,0.22)",
+    backgroundColor: "#5a3a1a",
   },
   th: {
-    textAlign: 'left',
-    padding: '10px 12px',
-    fontSize: '0.8rem',
-    color: '#e5f0ff',
-    borderBottom: '1px solid rgba(148,163,184,0.4)',
-    backgroundColor: '#0f172a',
+    textAlign: "left",
+    padding: "10px 12px",
+    fontSize: "0.8rem",
+    color: "#fffaf3",
+    borderBottom: "1px solid rgba(245,210,122,0.22)",
+    backgroundColor: "#5a3a1a",
   },
   thCenter: {
-    textAlign: 'center',
-    padding: '10px 12px',
-    fontSize: '0.8rem',
-    color: '#e5f0ff',
-    borderBottom: '1px solid rgba(148,163,184,0.4)',
-    backgroundColor: '#0f172a',
-    whiteSpace: 'nowrap',
+    textAlign: "center",
+    padding: "10px 12px",
+    fontSize: "0.8rem",
+    color: "#fffaf3",
+    borderBottom: "1px solid rgba(245,210,122,0.22)",
+    backgroundColor: "#5a3a1a",
+    whiteSpace: "nowrap",
   },
 
-  rowEven: {
-    backgroundColor: '#f9fafb',
-  },
-  rowOdd: {
-    backgroundColor: '#eff6ff',
-  },
+  rowEven: { backgroundColor: "#faf6f1" },
+  rowOdd: { backgroundColor: "#f3e6d8" },
 
   tdRoom: {
-    padding: '10px 12px',
-    borderBottom: '1px solid rgba(148,163,184,0.25)',
-    verticalAlign: 'middle',
+    padding: "10px 12px",
+    borderBottom: "1px solid rgba(212,175,55,0.22)",
+    verticalAlign: "middle",
   },
   td: {
-    padding: '10px 12px',
-    borderBottom: '1px solid rgba(148,163,184,0.25)',
-    verticalAlign: 'middle',
-    fontSize: '0.88rem',
-    color: '#0f172a',
+    padding: "10px 12px",
+    borderBottom: "1px solid rgba(212,175,55,0.22)",
+    verticalAlign: "middle",
+    fontSize: "0.88rem",
+    color: "#3d2a14",
+    fontWeight: 700,
   },
   tdCenter: {
-    padding: '10px 12px',
-    borderBottom: '1px solid rgba(148,163,184,0.25)',
-    verticalAlign: 'middle',
-    fontSize: '0.88rem',
-    color: '#0f172a',
-    textAlign: 'center',
+    padding: "10px 12px",
+    borderBottom: "1px solid rgba(212,175,55,0.22)",
+    verticalAlign: "middle",
+    fontSize: "0.88rem",
+    color: "#3d2a14",
+    textAlign: "center",
+    fontWeight: 700,
   },
 
-  roomCellInner: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
-  },
+  roomCellInner: { display: "flex", alignItems: "center", gap: "10px" },
   imageShell: {
-    width: '56px',
-    height: '56px',
-    borderRadius: '12px',
-    border: '1px solid rgba(148,163,184,0.7)',
-    overflow: 'hidden',
-    backgroundColor: '#e5edff',
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
+    width: "56px",
+    height: "56px",
+    borderRadius: "12px",
+    border: "1px solid rgba(212,175,55,0.30)",
+    overflow: "hidden",
+    backgroundColor: "#f3e6d8",
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
   },
-  image: {
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
-  },
-  roomName: {
-    fontWeight: 700,
-    fontSize: '0.92rem',
-    color: '#0f172a',
-  },
-  roomMeta: {
-    fontSize: '0.78rem',
-    color: '#6b7280',
-  },
-  guestName: {
-    fontWeight: 600,
-    color: '#111827',
-  },
+  image: { width: "100%", height: "100%", objectFit: "cover" },
+  noImg: { fontSize: "0.75rem", color: "#7a4a2e", fontWeight: 800 },
+
+  roomName: { fontWeight: 900, fontSize: "0.92rem", color: "#3d2a14" },
+  roomMeta: { fontSize: "0.78rem", color: "#8c7a55", fontWeight: 700 },
+
+  guestName: { fontWeight: 900, color: "#3d2a14" },
+
   amountChip: {
-    display: 'inline-block',
-    padding: '4px 10px',
-    borderRadius: '999px',
-    backgroundColor: 'rgba(37,99,235,0.08)',
-    color: '#1d4ed8',
-    fontSize: '0.8rem',
-    fontWeight: 700,
+    display: "inline-block",
+    padding: "4px 10px",
+    borderRadius: "999px",
+    backgroundColor: "rgba(212,175,55,0.18)",
+    border: "1px solid rgba(212,175,55,0.24)",
+    color: "#5a3a1a",
+    fontSize: "0.8rem",
+    fontWeight: 900,
   },
 
   // Badges
   badge: {
-    display: 'inline-block',
-    padding: '4px 10px',
-    borderRadius: '999px',
-    fontSize: '0.78rem',
-    fontWeight: 700,
+    display: "inline-block",
+    padding: "4px 10px",
+    borderRadius: "999px",
+    fontSize: "0.78rem",
+    fontWeight: 900,
+    border: "1px solid rgba(0,0,0,0.06)",
   },
-  badgePending: {
-    backgroundColor: 'rgba(254,240,138,0.6)',
-    color: '#92400e',
-  },
-  badgeApproved: {
-    backgroundColor: 'rgba(187,247,208,0.7)',
-    color: '#166534',
-  },
-  badgeRejected: {
-    backgroundColor: 'rgba(254,202,202,0.7)',
-    color: '#b91c1c',
-  },
+  badgePending: { backgroundColor: "rgba(234,179,8,0.22)", color: "#7c2d12" },
+  badgeApproved: { backgroundColor: "rgba(34,197,94,0.16)", color: "#14532d" },
+  badgeRejected: { backgroundColor: "rgba(239,68,68,0.16)", color: "#7f1d1d" },
 
   // Action buttons
   actionButtons: {
-    display: 'flex',
-    justifyContent: 'center',
-    gap: '6px',
-    flexWrap: 'wrap',
+    display: "flex",
+    justifyContent: "center",
+    gap: "6px",
+    flexWrap: "wrap",
   },
   smallBtn: {
-    padding: '6px 12px',
-    borderRadius: '999px',
-    border: '1px solid transparent',
-    fontSize: '0.8rem',
-    fontWeight: 700,
-    cursor: 'pointer',
+    padding: "6px 12px",
+    borderRadius: "999px",
+    border: "1px solid rgba(212,175,55,0.30)",
+    fontSize: "0.8rem",
+    fontWeight: 900,
+    cursor: "pointer",
+    backgroundColor: "#ffffff",
+    color: "#3d2a14",
   },
   smallBtnApprove: {
-    background:
-      'linear-gradient(135deg,rgba(34,197,94,0.16),rgba(34,197,94,0.26))',
-    borderColor: 'rgba(22,163,74,0.9)',
-    color: '#14532d',
+    backgroundImage: "linear-gradient(135deg, rgba(34,197,94,0.12), rgba(212,175,55,0.14))",
+    borderColor: "rgba(34,197,94,0.35)",
+    color: "#14532d",
   },
   smallBtnReject: {
-    background:
-      'linear-gradient(135deg,rgba(239,68,68,0.16),rgba(239,68,68,0.26))',
-    borderColor: 'rgba(220,38,38,0.9)',
-    color: '#7f1d1d',
+    backgroundImage: "linear-gradient(135deg, rgba(239,68,68,0.12), rgba(212,175,55,0.14))",
+    borderColor: "rgba(239,68,68,0.35)",
+    color: "#7f1d1d",
   },
-  statusIconOK: {
-    fontSize: '1.2rem',
-    color: '#16a34a',
-  },
-  statusIconReject: {
-    fontSize: '1.2rem',
-    color: '#dc2626',
-  },
+  statusIconOK: { fontSize: "1.2rem", color: "#16a34a", fontWeight: 900 },
+  statusIconReject: { fontSize: "1.2rem", color: "#dc2626", fontWeight: 900 },
 
-  // Empty + notice
-  emptyState: {
-    padding: '26px 12px 12px',
-    textAlign: 'center',
-  },
-  emptyTitle: {
-    margin: 0,
-    fontWeight: 800,
-    color: '#0f172a',
-    fontSize: '1rem',
-  },
-  emptyText: {
-    marginTop: '6px',
-    fontSize: '0.85rem',
-    color: '#6b7280',
-    opacity: 0.95,
-  },
+  emptyState: { padding: "26px 12px 12px", textAlign: "center" },
+  emptyTitle: { margin: 0, fontWeight: 900, color: "#3d2a14", fontSize: "1rem" },
+  emptyText: { marginTop: "6px", fontSize: "0.85rem", color: "#6b5a3c", fontWeight: 700, opacity: 0.95 },
 
   noticeBox: {
-    maxWidth: '520px',
-    margin: '60px auto 0',
-    backgroundColor: '#ffffff',
-    borderRadius: '18px',
-    border: '1px solid rgba(15,23,42,0.12)',
-    padding: '24px 20px',
-    textAlign: 'center',
-    boxShadow: '0 30px 80px rgba(15,23,42,0.20)',
-    color: '#0b1a33',
+    maxWidth: "520px",
+    margin: "60px auto 0",
+    backgroundColor: "#ffffff",
+    borderRadius: "18px",
+    border: "1px solid rgba(212,175,55,0.30)",
+    padding: "24px 20px",
+    textAlign: "center",
+    boxShadow: "0 30px 80px rgba(61,42,20,0.20)",
+    color: "#3d2a14",
   },
-  noticeTitle: {
-    margin: 0,
-    fontSize: '1.2rem',
-    fontWeight: 800,
-  },
-  noticeText: {
-    marginTop: '8px',
-    fontSize: '0.9rem',
-    color: '#4b5563',
-    opacity: 0.95,
-  },
+  noticeTitle: { margin: 0, fontSize: "1.2rem", fontWeight: 900 },
+  noticeText: { marginTop: "8px", fontSize: "0.9rem", color: "#6b5a3c", fontWeight: 700, opacity: 0.95 },
+
+  // Responsive fixes
+  "@media (max-width: 980px)": {},
 };
 
 export default BookingRequests;

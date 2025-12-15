@@ -16,15 +16,20 @@ import RoomInventory from "./pages/RoomInventory";
 import BookingRequests from "./pages/BookingRequests";
 import FinanceReport from "./pages/FinanceReport";
 import Profile from "./pages/Profile";
-import UserManagement from "./pages/UserManagement"; // 👈 NEW
+import UserManagement from "./pages/UserManagement"; 
+import Aboutus from "./pages/Aboutus"; 
+import MainHome from "./pages/MainHome";
 
 function App() {
   return (
     <Router>
       <Routes>
         {/* Public Routes (Hotel Mate: Login + Customer Registration) */}
-        <Route path="/" element={<Login />} />
+        
+        <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/about-us" element={<Aboutus />} />
+        <Route path="/" element={<MainHome />} />
 
         {/* Customer Routes (Hotel Mate: Customer dashboard + bookings) */}
         <Route

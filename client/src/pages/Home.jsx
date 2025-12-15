@@ -62,7 +62,7 @@ const Home = () => {
         icon: 'info',
         title: 'Login required',
         text: 'Please login as a customer to book a room.',
-        confirmButtonColor: '#0A3D91',
+        confirmButtonColor: '#7a4a2e',
       });
       return;
     }
@@ -79,7 +79,7 @@ const Home = () => {
         icon: 'warning',
         title: 'Select dates',
         text: 'Please choose your check-in and check-out dates.',
-        confirmButtonColor: '#0A3D91',
+        confirmButtonColor: '#7a4a2e',
       });
       return;
     }
@@ -92,7 +92,7 @@ const Home = () => {
         icon: 'error',
         title: 'Invalid dates',
         text: 'Please select valid dates for your stay.',
-        confirmButtonColor: '#0A3D91',
+        confirmButtonColor: '#7a4a2e',
       });
       return;
     }
@@ -112,7 +112,7 @@ const Home = () => {
         icon: 'error',
         title: 'Past dates not allowed',
         text: 'You can only book from today onwards. Please choose valid future dates.',
-        confirmButtonColor: '#0A3D91',
+        confirmButtonColor: '#7a4a2e',
       });
       return;
     }
@@ -122,7 +122,7 @@ const Home = () => {
         icon: 'error',
         title: 'Check-out must be later',
         text: 'Check-out date must be after check-in date.',
-        confirmButtonColor: '#0A3D91',
+        confirmButtonColor: '#7a4a2e',
       });
       return;
     }
@@ -134,7 +134,7 @@ const Home = () => {
         icon: 'warning',
         title: 'Number of guests',
         text: 'Please enter at least 1 guest.',
-        confirmButtonColor: '#0A3D91',
+        confirmButtonColor: '#7a4a2e',
       });
       return;
     }
@@ -150,7 +150,7 @@ const Home = () => {
         icon: 'error',
         title: 'Too many guests',
         text: `This room allows up to ${selectedRoom.capacity} guest(s). Please reduce the number of persons or choose another room.`,
-        confirmButtonColor: '#0A3D91',
+        confirmButtonColor: '#7a4a2e',
       });
       return;
     }
@@ -179,7 +179,7 @@ const Home = () => {
       icon: 'success',
       title: 'Room added to your bookings',
       text: `${selectedRoom.name} has been added to your stay plan.`,
-      confirmButtonColor: '#0A3D91',
+      confirmButtonColor: '#7a4a2e',
     });
 
     setSelectedRoom(null);
@@ -225,6 +225,11 @@ const Home = () => {
               <p style={styles.heroBadgeHint}>
                 You can book rooms and view your reservations.
               </p>
+
+              <div style={styles.heroBadgeLine} />
+              <div style={styles.heroBadgeMini}>
+                Luxury stays • Secure bookings • Instant confirmation
+              </div>
             </div>
           )}
         </div>
@@ -272,23 +277,48 @@ const Home = () => {
       {selectedRoom && (
         <div style={styles.modalOverlay}>
           <div style={styles.modal}>
-            <h3 style={styles.modalTitle}>{selectedRoom.name}</h3>
+            <div style={styles.modalTop}>
+              <div>
+                <p style={styles.modalKicker}>Room selection</p>
+                <h3 style={styles.modalTitle}>{selectedRoom.name}</h3>
+              </div>
 
-            <img
-              src={`${API_URL}/assets/images/${selectedRoom.image}`}
-              alt={selectedRoom.name}
-              style={styles.modalImage}
-            />
+              <button
+                type="button"
+                style={styles.modalClose}
+                onClick={() => setSelectedRoom(null)}
+                aria-label="Close"
+                title="Close"
+              >
+                ✕
+              </button>
+            </div>
 
-            <p style={styles.modalMeta}>
-              <strong>Price per night:</strong> {selectedRoom.price} OMR
-            </p>
+            <div style={styles.modalMedia}>
+              <img
+                src={`${API_URL}/assets/images/${selectedRoom.image}`}
+                alt={selectedRoom.name}
+                style={styles.modalImage}
+              />
+              <div style={styles.modalPricePill}>
+                <span style={styles.modalPriceMain}>{selectedRoom.price}</span>
+                <span style={styles.modalPriceSub}> OMR / night</span>
+              </div>
+            </div>
 
-            {selectedRoom.capacity && (
-              <p style={styles.modalMeta}>
-                <strong>Max guests:</strong> {selectedRoom.capacity}
-              </p>
-            )}
+            <div style={styles.modalMetaGrid}>
+              <div style={styles.modalMetaItem}>
+                <span style={styles.modalMetaLabel}>Price per night</span>
+                <span style={styles.modalMetaValue}>{selectedRoom.price} OMR</span>
+              </div>
+
+              {selectedRoom.capacity && (
+                <div style={styles.modalMetaItem}>
+                  <span style={styles.modalMetaLabel}>Max guests</span>
+                  <span style={styles.modalMetaValue}>{selectedRoom.capacity}</span>
+                </div>
+              )}
+            </div>
 
             {selectedRoom.description && (
               <p style={styles.modalDescription}>
@@ -359,21 +389,21 @@ const Home = () => {
 };
 
 /* ======================
-   HOTEL MATE THEME STYLES (BLUE & WHITE FOR NOW)
+   HOTEL MATE THEME STYLES (BROWN / GOLD LUXURY)
    ====================== */
 
 const styles = {
   page: {
     minHeight: '100vh',
-    backgroundColor: '#E8F1FF',
+    backgroundColor: '#f7f1e6',
     backgroundImage:
-      'radial-gradient(circle at top left, rgba(37,99,235,0.15), transparent 55%), ' +
-      'radial-gradient(circle at bottom right, rgba(59,130,246,0.18), transparent 55%)',
-    color: '#0B1A33',
+      'radial-gradient(circle at top left, rgba(212,175,55,0.18), transparent 55%), ' +
+      'radial-gradient(circle at bottom right, rgba(122,74,46,0.16), transparent 55%)',
+    color: '#2b1a12',
   },
 
   heroBand: {
-    padding: '24px 16px 32px',
+    padding: '22px 16px 28px',
   },
 
   heroInner: {
@@ -381,106 +411,127 @@ const styles = {
     margin: '0 auto',
     display: 'flex',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'stretch',
     gap: '24px',
     flexWrap: 'wrap',
     borderRadius: '26px',
     padding: '22px 22px 24px',
-    border: '1px solid rgba(148,163,184,0.5)',
+    border: '1px solid rgba(122,74,46,0.16)',
     backgroundImage:
-      'radial-gradient(circle at top left, rgba(191,219,254,0.9), transparent 70%), ' +
-      'radial-gradient(circle at bottom right, rgba(191,219,254,0.85), transparent 70%), ' +
-      'linear-gradient(135deg, #FFFFFF, #EFF6FF)',
-    boxShadow: '0 18px 45px rgba(15,23,42,0.18)',
+      'radial-gradient(circle at top left, rgba(212,175,55,0.22), transparent 70%), ' +
+      'radial-gradient(circle at bottom right, rgba(122,74,46,0.18), transparent 70%), ' +
+      'linear-gradient(135deg, rgba(255,255,255,0.92), rgba(255,248,225,0.78))',
+    boxShadow: '0 18px 46px rgba(43,26,18,0.18)',
   },
 
   heroTextBlock: {
-    maxWidth: '620px',
+    maxWidth: '660px',
   },
 
   heroKicker: {
     margin: 0,
     fontSize: '11px',
     textTransform: 'uppercase',
-    letterSpacing: '0.16em',
-    color: '#1D4ED8',
+    letterSpacing: '0.18em',
+    color: '#7a4a2e',
+    fontWeight: 800,
   },
 
   heroTitle: {
-    margin: '4px 0 0',
-    fontSize: '30px',
-    fontWeight: 800,
+    margin: '6px 0 0',
+    fontSize: '32px',
+    fontWeight: 900,
     letterSpacing: '0.08em',
     textTransform: 'uppercase',
-    color: '#0B1A33',
+    color: '#2b1a12',
   },
 
   heroSubtitle: {
     marginTop: '10px',
     marginBottom: '16px',
     fontSize: '14px',
-    color: '#1F2937',
+    color: 'rgba(43,26,18,0.78)',
+    lineHeight: 1.6,
   },
 
   heroLocationChip: {
     display: 'inline-flex',
     alignItems: 'center',
     gap: 4,
-    padding: '6px 12px',
+    padding: '7px 12px',
     borderRadius: '999px',
-    backgroundColor: '#EFF6FF',
-    border: '1px solid rgba(129,140,248,0.7)',
+    backgroundColor: 'rgba(212,175,55,0.12)',
+    border: '1px solid rgba(212,175,55,0.35)',
     fontSize: '13px',
-    color: '#0B1A33',
+    color: '#2b1a12',
   },
 
   heroLocationChipError: {
     display: 'inline-flex',
     alignItems: 'center',
-    padding: '6px 12px',
+    padding: '7px 12px',
     borderRadius: '999px',
-    backgroundColor: '#FEF2F2',
-    border: '1px solid #FCA5A5',
+    backgroundColor: 'rgba(185,28,28,0.08)',
+    border: '1px solid rgba(185,28,28,0.25)',
     fontSize: '13px',
-    color: '#B91C1C',
+    color: '#b91c1c',
     marginTop: '6px',
   },
 
   heroBadgeCard: {
-    minWidth: '240px',
+    minWidth: '260px',
     padding: '14px 16px',
     borderRadius: '18px',
-    backgroundColor: '#FFFFFF',
-    border: '1px solid rgba(148,163,184,0.45)',
-    boxShadow: '0 14px 30px rgba(15,23,42,0.12)',
+    backgroundColor: 'rgba(255,255,255,0.82)',
+    backdropFilter: 'blur(10px)',
+    WebkitBackdropFilter: 'blur(10px)',
+    border: '1px solid rgba(122,74,46,0.16)',
+    boxShadow: '0 14px 30px rgba(43,26,18,0.14)',
+    alignSelf: 'center',
   },
 
   heroBadgeLabel: {
     margin: 0,
     fontSize: '11px',
     textTransform: 'uppercase',
-    letterSpacing: '0.12em',
-    color: '#6B7280',
+    letterSpacing: '0.14em',
+    color: 'rgba(43,26,18,0.68)',
+    fontWeight: 800,
   },
 
   heroBadgeEmail: {
-    margin: '4px 0 2px',
+    margin: '6px 0 4px',
     fontSize: '14px',
-    fontWeight: 600,
-    color: '#0B1A33',
+    fontWeight: 800,
+    color: '#2b1a12',
     wordBreak: 'break-all',
   },
 
   heroBadgeHint: {
     margin: 0,
     fontSize: '12px',
-    color: '#4B5563',
+    color: 'rgba(43,26,18,0.72)',
+    lineHeight: 1.5,
+  },
+
+  heroBadgeLine: {
+    height: 1,
+    width: '100%',
+    marginTop: 12,
+    background:
+      'linear-gradient(90deg, transparent, rgba(212,175,55,0.7), transparent)',
+  },
+
+  heroBadgeMini: {
+    marginTop: 10,
+    fontSize: '12px',
+    color: 'rgba(43,26,18,0.62)',
   },
 
   container: {
     maxWidth: '1200px',
     margin: '0 auto',
-    padding: '24px 20px 40px',
+    padding: '18px 20px 40px',
   },
 
   headerRow: {
@@ -494,25 +545,28 @@ const styles = {
   heading: {
     margin: 0,
     fontSize: '22px',
-    fontWeight: 800,
-    letterSpacing: '0.04em',
+    fontWeight: 900,
+    letterSpacing: '0.06em',
     textTransform: 'uppercase',
-    color: '#0B1A33',
+    color: '#2b1a12',
   },
 
   subHeading: {
-    marginTop: '4px',
+    marginTop: '6px',
     marginBottom: 0,
     fontSize: '14px',
-    color: '#4B5563',
+    color: 'rgba(43,26,18,0.72)',
+    lineHeight: 1.55,
   },
 
   gridSection: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: '20px',
+    backgroundColor: 'rgba(255,255,255,0.82)',
+    backdropFilter: 'blur(10px)',
+    WebkitBackdropFilter: 'blur(10px)',
+    borderRadius: '22px',
     padding: '18px 18px 22px',
-    boxShadow: '0 16px 38px rgba(15,23,42,0.12)',
-    border: '1px solid rgba(209,213,219,0.9)',
+    boxShadow: '0 16px 44px rgba(43,26,18,0.14)',
+    border: '1px solid rgba(122,74,46,0.14)',
   },
 
   cardGridWrapper: {
@@ -525,9 +579,9 @@ const styles = {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
     justifyContent: 'center',
-    gap: '24px',
+    gap: '22px',
     width: '100%',
-    maxWidth: '1000px',
+    maxWidth: '1040px',
   },
 
   emptyState: {
@@ -537,20 +591,22 @@ const styles = {
   emptyTitle: {
     margin: 0,
     marginBottom: 8,
-    color: '#111827',
-    fontWeight: 700,
+    color: '#2b1a12',
+    fontWeight: 900,
+    letterSpacing: '0.02em',
   },
   emptyText: {
     margin: 0,
-    color: '#6B7280',
-    fontSize: '0.9rem',
+    color: 'rgba(43,26,18,0.72)',
+    fontSize: '0.95rem',
+    lineHeight: 1.6,
   },
 
   /* MODAL */
   modalOverlay: {
     position: 'fixed',
     inset: 0,
-    backgroundColor: 'rgba(15,23,42,0.45)',
+    backgroundColor: 'rgba(43,26,18,0.55)',
     zIndex: 1000,
     display: 'flex',
     justifyContent: 'center',
@@ -558,61 +614,156 @@ const styles = {
     padding: '16px',
   },
 
-  modal: {
-    width: '100%',
-    maxWidth: '440px',
-    backgroundColor: '#FFFFFF',
-    padding: '22px 20px 20px',
-    borderRadius: '20px',
-    textAlign: 'left',
-    boxShadow: '0 20px 55px rgba(15,23,42,0.3)',
-    border: '1px solid rgba(191,219,254,0.9)',
-    color: '#0B1A33',
+ modal: {
+  width: '100%',
+  maxWidth: '460px',
+  backgroundColor: 'rgba(255,255,255,0.90)',
+  backdropFilter: 'blur(12px)',
+  WebkitBackdropFilter: 'blur(12px)',
+  padding: '18px 18px 18px',
+  borderRadius: '22px',
+  textAlign: 'left',
+  boxShadow: '0 22px 60px rgba(0,0,0,0.35)',
+  border: '1px solid rgba(212,175,55,0.28)',
+  color: '#2b1a12',
+
+  // ✅ NEW (prevents content going out)
+  maxHeight: 'calc(100vh - 40px)',
+  overflowY: 'auto',
+},
+
+  modalTop: {
+    display: 'flex',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    gap: '12px',
+    marginBottom: '10px',
+  },
+
+  modalKicker: {
+    margin: 0,
+    fontSize: '11px',
+    textTransform: 'uppercase',
+    letterSpacing: '0.18em',
+    color: '#7a4a2e',
+    fontWeight: 900,
   },
 
   modalTitle: {
-    margin: '0 0 10px',
+    margin: '4px 0 0',
     fontSize: '20px',
-    fontWeight: 700,
-    color: '#0B1A33',
-    textAlign: 'center',
+    fontWeight: 900,
+    color: '#2b1a12',
+  },
+
+  modalClose: {
+    border: '1px solid rgba(122,74,46,0.18)',
+    background: 'rgba(255,255,255,0.72)',
+    width: 36,
+    height: 36,
+    borderRadius: 12,
+    cursor: 'pointer',
+    fontWeight: 900,
+    color: 'rgba(43,26,18,0.85)',
+    boxShadow: '0 10px 18px rgba(43,26,18,0.10)',
+  },
+
+  modalMedia: {
+    position: 'relative',
+    borderRadius: '14px',
+    overflow: 'hidden',
+    border: '1px solid rgba(122,74,46,0.14)',
+    boxShadow: '0 14px 30px rgba(43,26,18,0.14)',
   },
 
   modalImage: {
     width: '100%',
-    height: '200px',
+    height: '210px',
     objectFit: 'cover',
-    borderRadius: '12px',
-    marginBottom: '10px',
+    display: 'block',
+    filter: 'contrast(1.02) saturate(1.02)',
   },
 
-  modalMeta: {
-    margin: '4px 0',
+  modalPricePill: {
+    position: 'absolute',
+    bottom: 12,
+    left: 12,
+    padding: '8px 12px',
+    borderRadius: '999px',
+    backgroundImage: 'linear-gradient(135deg, #7a4a2e, #d4af37)',
+    border: '1px solid rgba(212,175,55,0.35)',
+    display: 'inline-flex',
+    alignItems: 'baseline',
+    boxShadow: '0 14px 28px rgba(43,26,18,0.28)',
+  },
+
+  modalPriceMain: {
+    fontWeight: 900,
     fontSize: '14px',
-    color: '#111827',
+    color: '#fff8e1',
+  },
+
+  modalPriceSub: {
+    marginLeft: 5,
+    color: 'rgba(255,248,225,0.92)',
+    fontSize: '12px',
+  },
+
+  modalMetaGrid: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr',
+    gap: '10px',
+    marginTop: '12px',
+  },
+
+  modalMetaItem: {
+    borderRadius: '14px',
+    padding: '10px 12px',
+    backgroundColor: 'rgba(212,175,55,0.10)',
+    border: '1px solid rgba(212,175,55,0.20)',
+  },
+
+  modalMetaLabel: {
+    display: 'block',
+    fontSize: '11px',
+    textTransform: 'uppercase',
+    letterSpacing: '0.14em',
+    color: 'rgba(43,26,18,0.70)',
+    fontWeight: 900,
+  },
+
+  modalMetaValue: {
+    display: 'block',
+    marginTop: 4,
+    fontSize: '13px',
+    fontWeight: 900,
+    color: '#2b1a12',
   },
 
   modalDescription: {
-    margin: '4px 0',
+    margin: '10px 0 0',
     fontSize: '13px',
-    color: '#4B5563',
+    color: 'rgba(43,26,18,0.78)',
+    lineHeight: 1.55,
   },
 
   // 🔹 row for From / To fields, side by side INSIDE modal box
-  modalFieldRow: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    gap: '16px',
-    marginTop: '16px',
-    width: '100%',
-  },
+ modalFieldRow: {
+  display: 'flex',
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'flex-start',
+  gap: '14px',
+  marginTop: '16px',
+  width: '100%',
+  flexWrap: 'wrap', // ✅ NEW
+},
 
-  modalField: {
-    flex: 1,
-    minWidth: 0,
-  },
+modalField: {
+  flex: 1,
+  minWidth: '180px', // ✅ NEW (forces wrap on small width)
+},
+
 
   modalHintRow: {
     marginTop: '6px',
@@ -620,41 +771,45 @@ const styles = {
   },
 
   label: {
-    fontWeight: 600,
+    fontWeight: 900,
     display: 'block',
     marginBottom: '6px',
-    fontSize: '13px',
-    color: '#0B1A33',
+    fontSize: '12px',
+    color: 'rgba(43,26,18,0.88)',
+    letterSpacing: '0.02em',
   },
 
   helperText: {
     fontSize: '11px',
-    color: '#6B7280',
+    color: 'rgba(43,26,18,0.62)',
   },
 
-  input: {
-    width: '100%',
-    padding: '9px 10px',
-    borderRadius: '10px',
-    border: '1px solid #CBD5F5',
-    marginBottom: '4px',
-    fontSize: '14px',
-    backgroundColor: '#F9FAFB',
-    color: '#0B1A33',
-    outline: 'none',
-  },
+input: {
+  width: '100%',
+  padding: '10px 12px',
+  borderRadius: '12px',
+  border: '1px solid rgba(122,74,46,0.20)',
+  marginBottom: '0px', // ✅ change from 4px
+  fontSize: '14px',
+  backgroundColor: 'rgba(255,255,255,0.86)',
+  color: '#2b1a12',
+  outline: 'none',
+  boxSizing: 'border-box', // ✅ NEW (prevents overflow)
+},
+
 
   primaryButton: {
     width: '100%',
     padding: '11px',
-    backgroundImage: 'linear-gradient(135deg, #0A3D91, #1E5FE0)',
-    border: 'none',
+    backgroundImage: 'linear-gradient(135deg, #7a4a2e, #d4af37)',
+    border: '1px solid rgba(212,175,55,0.35)',
     borderRadius: '999px',
-    fontWeight: 700,
+    fontWeight: 900,
     cursor: 'pointer',
     marginTop: '14px',
-    color: '#F9FAFF',
-    boxShadow: '0 10px 24px rgba(37,99,235,0.55)',
+    color: '#fff8e1',
+    boxShadow: '0 14px 30px rgba(43,26,18,0.22)',
+    letterSpacing: '0.02em',
   },
 
   secondaryButton: {
@@ -662,9 +817,9 @@ const styles = {
     padding: '10px',
     backgroundColor: 'transparent',
     borderRadius: '999px',
-    border: '1px solid #CBD5F5',
-    color: '#0A3D91',
-    fontWeight: 600,
+    border: '1px solid rgba(122,74,46,0.28)',
+    color: '#7a4a2e',
+    fontWeight: 900,
     cursor: 'pointer',
     marginTop: '8px',
   },

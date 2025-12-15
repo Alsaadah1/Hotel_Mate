@@ -1,7 +1,7 @@
 // src/pages/ManagementOverview.jsx
 
 import React, { useEffect, useState } from "react";
-import Navbar from "../components/Navbar";
+import Navbar from "../components/Navbar"; // ✅ your global navbar
 import useLocation from "../utils/useLocation";
 import { useSelector } from "react-redux";
 
@@ -16,30 +16,21 @@ const ManagementOverview = () => {
   const [totalRevenue, setTotalRevenue] = useState(0);
 
   useEffect(() => {
-    // ✅ Allow both owner and staff to see this dashboard
+    // ✅ Allow both owner and staff
     if (!user || (user.role !== "owner" && user.role !== "staff")) return;
 
     const fetchDashboardData = async () => {
       try {
-        // 1) Rooms owned/managed by this user
         const roomsRes = await fetch(`${API_URL}/api/rooms/manager/${user._id}`);
         if (roomsRes.ok) {
           const roomsData = await roomsRes.json();
-          if (Array.isArray(roomsData)) {
-            setRoomsCount(roomsData.length);
-          }
+          if (Array.isArray(roomsData)) setRoomsCount(roomsData.length);
         } else {
-          console.error("Failed to fetch rooms, status:", roomsRes.status);
           setRoomsCount(0);
         }
 
-        // 2) Bookings related to this manager/owner
-        const bookingsRes = await fetch(
-          `${API_URL}/api/bookings/owner/${user._id}`
-        );
-
+        const bookingsRes = await fetch(`${API_URL}/api/bookings/owner/${user._id}`);
         if (!bookingsRes.ok) {
-          console.error("Failed to fetch bookings, status:", bookingsRes.status);
           setConfirmedBookings(0);
           setPendingBookings(0);
           setTotalRevenue(0);
@@ -55,11 +46,9 @@ const ManagementOverview = () => {
 
           bookingsData.forEach((booking) => {
             const status = (booking.status || "").toLowerCase();
-
             if (status === "approved") {
               confirmed += 1;
-              const amount = Number(booking.totalCost) || 0;
-              revenue += amount;
+              revenue += Number(booking.totalCost) || 0;
             } else if (status === "pending") {
               pending += 1;
             }
@@ -86,487 +75,449 @@ const ManagementOverview = () => {
   const revenueGoal = Math.max(500, totalRevenue * 1.3);
   const revenueRatio = revenueGoal > 0 ? Math.min(totalRevenue / revenueGoal, 1) : 0;
 
-  const roleLabel =
-    user?.role === "owner" ? "Owner" : user?.role === "staff" ? "Staff" : "Manager";
-
   return (
     <>
+      {/* ✅ YOUR navbar (menu + logout handled there) */}
       <Navbar />
-      <div style={styles.page}>
-        {/* Top band */}
-        <section style={styles.band}>
-          <div style={styles.bandInner}>
+
+      {/* ✅ This page contains ONLY content (NO duplicate sidebar/menu) */}
+      <div className="adm-page">
+        <div className="adm-wrap">
+          <header className="adm-top">
             <div>
-              <p style={styles.bandLabel}>Hotel Mate – Management Hub</p>
-              <h1 style={styles.title}>Property Management Overview</h1>
-              <p style={styles.subtitle}>
+              <div className="adm-kicker">HOTEL MATE</div>
+              <h1 className="adm-title">Property Management Overview</h1>
+              <p className="adm-subtitle">
                 Monitor your rooms, bookings, and revenue performance in one place.
               </p>
             </div>
 
-            {user && (
-              <div style={styles.userCard}>
-                <div style={styles.userRole}>{roleLabel}</div>
-                <div style={styles.userEmail}>{user.email}</div>
-                <div style={styles.userHint}>Signed in to management console</div>
+           
+          </header>
+
+          <section className="adm-grid">
+            <div className="adm-card">
+              <div className="adm-card-head">
+                <div className="adm-card-label">Rooms listed</div>
+                <div className="adm-chip">Total</div>
               </div>
-            )}
-          </div>
-        </section>
-
-        <div style={styles.wrapper}>
-          {/* Summary cards */}
-          <section style={styles.cardsGrid}>
-            <div style={{ ...styles.card, ...styles.cardAccentRooms }}>
-              <h3 style={styles.cardLabel}>Rooms listed</h3>
-              <div style={styles.metric}>{roomsCount}</div>
-              <p style={styles.cardHint}>
-                Total rooms currently available in your Hotel Mate property.
-              </p>
+              <div className="adm-metric">{roomsCount}</div>
+              <div className="adm-hint">Total rooms currently available in your property.</div>
             </div>
 
-            <div style={{ ...styles.card, ...styles.cardAccentConfirmed }}>
-              <h3 style={styles.cardLabel}>Confirmed bookings</h3>
-              <div style={styles.metric}>{confirmedBookings}</div>
-              <p style={styles.cardHint}>
-                Bookings that have been approved and confirmed.
-              </p>
+            <div className="adm-card">
+              <div className="adm-card-head">
+                <div className="adm-card-label">Confirmed bookings</div>
+                <div className="adm-chip ok">Approved</div>
+              </div>
+              <div className="adm-metric">{confirmedBookings}</div>
+              <div className="adm-hint">Bookings that have been approved and confirmed.</div>
             </div>
 
-            <div style={{ ...styles.card, ...styles.cardAccentPending }}>
-              <h3 style={styles.cardLabel}>Pending requests</h3>
-              <div style={styles.metric}>{pendingBookings}</div>
-              <p style={styles.cardHint}>
-                New booking requests waiting for your review.
-              </p>
+            <div className="adm-card">
+              <div className="adm-card-head">
+                <div className="adm-card-label">Pending requests</div>
+                <div className="adm-chip warn">Waiting</div>
+              </div>
+              <div className="adm-metric">{pendingBookings}</div>
+              <div className="adm-hint">New booking requests waiting for your review.</div>
             </div>
 
-            <div style={{ ...styles.card, ...styles.cardAccentRevenue }}>
-              <h3 style={styles.cardLabel}>Total room revenue</h3>
-              <div style={styles.metric}>OMR {totalRevenue.toFixed(2)}</div>
-              <p style={styles.cardHint}>
-                Calculated from all approved bookings.
-              </p>
+            <div className="adm-card">
+              <div className="adm-card-head">
+                <div className="adm-card-label">Total room revenue</div>
+                <div className="adm-chip">OMR</div>
+              </div>
+              <div className="adm-metric">OMR {totalRevenue.toFixed(2)}</div>
+              <div className="adm-hint">Calculated from all approved bookings.</div>
             </div>
-          </section>
 
-          {/* Bottom row: graphs + location */}
-          <section style={styles.bottomRow}>
-            {/* Graphs panel */}
-            <div style={styles.graphPanel}>
-              <h2 style={styles.panelTitle}>Booking & revenue insights</h2>
-              <p style={styles.panelSubtitle}>
+            <div className="adm-card adm-span-2">
+              <div className="adm-panel-title">Booking &amp; revenue insights</div>
+              <div className="adm-panel-sub">
                 A quick visual snapshot of your booking mix and revenue progress.
-              </p>
+              </div>
 
-              {/* Bookings mix graph */}
-              <div style={styles.graphBlock}>
-                <div style={styles.graphHeaderRow}>
-                  <h3 style={styles.graphTitle}>Bookings mix</h3>
-                  <span style={styles.graphTag}>{totalBookings} total bookings</span>
-                </div>
-                <p style={styles.graphHint}>
-                  Confirmed vs pending booking requests.
-                </p>
-
-                <div style={styles.legendRow}>
-                  <span style={{ ...styles.legendDot, ...styles.legendDotConfirmed }} />
-                  <span style={styles.legendLabel}>Confirmed</span>
-                  <span style={{ ...styles.legendDot, ...styles.legendDotPending }} />
-                  <span style={styles.legendLabel}>Pending</span>
+              <div className="adm-block">
+                <div className="adm-block-top">
+                  <div className="adm-block-title">Bookings mix</div>
+                  <div className="adm-tag">{totalBookings} total</div>
                 </div>
 
-                <div style={styles.barShell}>
-                  <div
-                    style={{
-                      ...styles.barSegmentConfirmed,
-                      width: `${confirmedPercent}%`,
-                    }}
-                  >
+                <div className="adm-legend">
+                  <span className="dot dot-ok" />
+                  <span className="leg">Confirmed</span>
+                  <span className="dot dot-warn" />
+                  <span className="leg">Pending</span>
+                </div>
+
+                <div className="adm-bar">
+                  <div className="adm-bar-ok" style={{ width: `${confirmedPercent}%` }}>
                     {confirmedBookings > 0 && (
-                      <span style={styles.barLabel}>{confirmedPercent}%</span>
+                      <span className="adm-bar-txt">{confirmedPercent}%</span>
                     )}
                   </div>
-                  <div
-                    style={{
-                      ...styles.barSegmentPending,
-                      width: `${pendingPercent}%`,
-                    }}
-                  >
+                  <div className="adm-bar-warn" style={{ width: `${pendingPercent}%` }}>
                     {pendingBookings > 0 && (
-                      <span style={styles.barLabel}>{pendingPercent}%</span>
+                      <span className="adm-bar-txt">{pendingPercent}%</span>
                     )}
                   </div>
                 </div>
               </div>
 
-              {/* Revenue progress graph */}
-              <div style={styles.graphBlock}>
-                <div style={styles.graphHeaderRow}>
-                  <h3 style={styles.graphTitle}>Revenue progress</h3>
-                  <span style={styles.graphTagMuted}>
-                    Soft goal: OMR {revenueGoal.toFixed(0)}
-                  </span>
-                </div>
-                <p style={styles.graphHint}>
-                  How your current revenue compares to a projected target.
-                </p>
-
-                <div style={styles.revenueLabelRow}>
-                  <span style={styles.revenueNow}>
-                    Current: OMR {totalRevenue.toFixed(2)}
-                  </span>
-                  <span style={styles.revenuePercent}>
-                    {Math.round(revenueRatio * 100)}% of goal
-                  </span>
+              <div className="adm-block">
+                <div className="adm-block-top">
+                  <div className="adm-block-title">Revenue progress</div>
+                  <div className="adm-tag soft">Soft goal: OMR {revenueGoal.toFixed(0)}</div>
                 </div>
 
-                <div style={styles.revenueBarShell}>
+                <div className="adm-row">
+                  <div className="adm-row-left">Current: OMR {totalRevenue.toFixed(2)}</div>
+                  <div className="adm-row-right">{Math.round(revenueRatio * 100)}% of goal</div>
+                </div>
+
+                <div className="adm-progress">
                   <div
-                    style={{
-                      ...styles.revenueBarFill,
-                      width: `${revenueRatio * 100}%`,
-                    }}
+                    className="adm-progress-fill"
+                    style={{ width: `${revenueRatio * 100}%` }}
                   />
                 </div>
               </div>
             </div>
 
-            {/* Location panel */}
-            <div style={styles.sidePanel}>
-              <h2 style={styles.panelTitle}>Hotel location snapshot</h2>
-              <p style={styles.panelSubtitle}>
+            <div className="adm-card">
+              <div className="adm-panel-title">Hotel location snapshot</div>
+              <div className="adm-panel-sub">
                 Helps personalise booking context and guest summaries.
-              </p>
+              </div>
 
-              {error && <p style={styles.error}>{error}</p>}
+              {error && <div className="adm-error">{error}</div>}
 
               {placeInfo ? (
-                <div style={styles.locationBox}>
-                  <p>
+                <div className="adm-loc">
+                  <div>
                     <strong>City:</strong> {placeInfo.city || "—"}
-                  </p>
-                  <p>
+                  </div>
+                  <div>
                     <strong>Region:</strong> {placeInfo.region || "—"}
-                  </p>
-                  <p>
+                  </div>
+                  <div>
                     <strong>Country:</strong> {placeInfo.country || "—"}
-                  </p>
+                  </div>
                 </div>
               ) : !error ? (
-                <p style={styles.loadingText}>Detecting hotel location…</p>
+                <div className="adm-hint">Detecting hotel location…</div>
               ) : null}
             </div>
           </section>
         </div>
+
+        <style>{`
+          :root{
+            --hm-brown-deep:#5a3a1a;
+            --hm-gold:#c9a24d;
+            --hm-ink:#3d2a14;
+            --hm-muted:#6b5a3c;
+            --hm-subtle:#8c7a55;
+            --hm-card:#ffffff;
+            --hm-border:rgba(90,58,26,0.16);
+            --hm-shadow: 0 18px 40px rgba(61,42,20,0.14);
+          }
+
+          .adm-page{
+            min-height: 100vh;
+            background-color: #fbf8f3;
+            background-image:
+              radial-gradient(circle at top right, rgba(201,162,77,0.20), transparent 55%),
+              radial-gradient(circle at bottom left, rgba(90,58,26,0.12), transparent 55%);
+          }
+
+          .adm-wrap{
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 18px 16px 40px;
+          }
+
+          .adm-top{
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 16px 16px 18px;
+            border-radius: 18px;
+            background:
+              radial-gradient(circle at top left, rgba(201,162,77,0.18), transparent 55%),
+              linear-gradient(145deg, #ffffff, #fbf6ec);
+            border: 1px solid var(--hm-border);
+            box-shadow: var(--hm-shadow);
+            margin-bottom: 14px;
+          }
+
+          .adm-kicker{
+            font-size: 11px;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--hm-subtle);
+            font-weight: 900;
+          }
+
+          .adm-title{
+            margin: 6px 0 6px;
+            font-size: 22px;
+            font-weight: 900;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: var(--hm-ink);
+          }
+
+          .adm-subtitle{
+            margin: 0;
+            font-size: 13px;
+            color: var(--hm-muted);
+            font-weight: 600;
+            max-width: 720px;
+          }
+
+          .adm-support{
+            text-decoration: none;
+            white-space: nowrap;
+            padding: 10px 14px;
+            border-radius: 999px;
+            font-weight: 900;
+            color: #fff;
+            background: linear-gradient(135deg, var(--hm-brown-deep), var(--hm-gold));
+            box-shadow: 0 14px 30px rgba(61,42,20,0.24);
+          }
+
+          .adm-grid{
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+          }
+
+          .adm-card{
+            background: var(--hm-card);
+            border: 1px solid var(--hm-border);
+            border-radius: 18px;
+            box-shadow: var(--hm-shadow);
+            padding: 14px;
+            min-width: 0;
+          }
+
+          .adm-span-2{ grid-column: span 2; }
+
+          .adm-card-head{
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+          }
+
+          .adm-card-label{
+            color: var(--hm-subtle);
+            font-weight: 800;
+            font-size: 0.92rem;
+          }
+
+          .adm-chip{
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--hm-brown-deep);
+            background: rgba(201,162,77,0.16);
+            border: 1px solid rgba(139,106,47,0.22);
+            padding: 4px 10px;
+            border-radius: 999px;
+          }
+          .adm-chip.ok{
+            background: rgba(34,197,94,0.10);
+            border-color: rgba(22,163,74,0.25);
+            color: #166534;
+          }
+          .adm-chip.warn{
+            background: rgba(234,179,8,0.12);
+            border-color: rgba(234,179,8,0.25);
+            color: #7c2d12;
+          }
+
+          .adm-metric{
+            margin-top: 10px;
+            font-size: 1.7rem;
+            font-weight: 900;
+            letter-spacing: 0.03em;
+            color: var(--hm-ink);
+          }
+
+          .adm-hint{
+            margin-top: 8px;
+            font-size: 0.84rem;
+            color: var(--hm-subtle);
+            font-weight: 600;
+          }
+
+          .adm-panel-title{
+            font-weight: 900;
+            color: var(--hm-ink);
+            margin: 0 0 4px;
+            font-size: 1rem;
+          }
+
+          .adm-panel-sub{
+            color: var(--hm-subtle);
+            font-weight: 600;
+            font-size: 0.86rem;
+            margin-bottom: 10px;
+          }
+
+          .adm-block{
+            margin-top: 12px;
+            background: linear-gradient(145deg, #ffffff, #fffdf8);
+            border: 1px solid rgba(139,106,47,0.16);
+            border-radius: 14px;
+            padding: 12px;
+          }
+
+          .adm-block-top{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+          }
+
+          .adm-block-title{
+            font-weight: 900;
+            color: var(--hm-ink);
+            font-size: 0.95rem;
+          }
+
+          .adm-tag{
+            font-size: 12px;
+            font-weight: 800;
+            color: #166534;
+            background: rgba(34,197,94,0.10);
+            border: 1px solid rgba(22,163,74,0.25);
+            padding: 4px 10px;
+            border-radius: 999px;
+          }
+
+          .adm-tag.soft{
+            color: var(--hm-ink);
+            background: rgba(201,162,77,0.12);
+            border-color: rgba(139,106,47,0.20);
+          }
+
+          .adm-legend{
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            font-size: 12px;
+            color: var(--hm-muted);
+            font-weight: 700;
+          }
+
+          .dot{ width: 9px; height: 9px; border-radius: 999px; display: inline-block; }
+          .dot-ok{ background: #22c55e; }
+          .dot-warn{ background: #eab308; }
+          .leg{ margin-right: 10px; }
+
+          .adm-bar{
+            width: 100%;
+            height: 24px;
+            border-radius: 999px;
+            overflow: hidden;
+            display: flex;
+            border: 1px solid rgba(139,106,47,0.18);
+            background: rgba(201,162,77,0.10);
+          }
+
+          .adm-bar-ok{
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+          }
+
+          .adm-bar-warn{
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #facc15, #eab308);
+          }
+
+          .adm-bar-txt{
+            font-size: 12px;
+            font-weight: 900;
+            color: rgba(61,42,20,0.90);
+            padding: 0 6px;
+            white-space: nowrap;
+          }
+
+          .adm-row{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+            margin-bottom: 8px;
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--hm-muted);
+          }
+
+          .adm-row-right{ color: var(--hm-brown-deep); }
+
+          .adm-progress{
+            width: 100%;
+            height: 20px;
+            border-radius: 999px;
+            overflow: hidden;
+            border: 1px solid rgba(139,106,47,0.18);
+            background: rgba(201,162,77,0.10);
+          }
+
+          .adm-progress-fill{
+            height: 100%;
+            border-radius: 999px;
+            background: linear-gradient(135deg, var(--hm-brown-deep), var(--hm-gold));
+            box-shadow: 0 10px 22px rgba(61,42,20,0.22);
+            transition: width 0.3s ease;
+          }
+
+          .adm-loc{
+            margin-top: 10px;
+            border-radius: 14px;
+            padding: 12px;
+            border: 1px solid rgba(139,106,47,0.16);
+            background: linear-gradient(145deg, #ffffff, #fffdf8);
+            color: var(--hm-ink);
+            font-weight: 700;
+            font-size: 0.92rem;
+            line-height: 1.7;
+          }
+
+          .adm-error{
+            margin-top: 8px;
+            color: #b91c1c;
+            font-weight: 800;
+            font-size: 0.88rem;
+          }
+
+          @media (max-width: 1100px){
+            .adm-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .adm-span-2{ grid-column: span 2; }
+          }
+
+          @media (max-width: 820px){
+            .adm-grid{ grid-template-columns: 1fr; }
+            .adm-span-2{ grid-column: span 1; }
+          }
+        `}</style>
       </div>
     </>
   );
-};
-
-const styles = {
-  page: {
-    minHeight: "100vh",
-    backgroundColor: "#f3f6fb",
-    backgroundImage:
-      "radial-gradient(circle at top right, rgba(148,163,253,0.35), transparent 55%), " +
-      "radial-gradient(circle at bottom left, rgba(56,189,248,0.18), transparent 55%)",
-  },
-  band: {
-    backgroundImage: "linear-gradient(135deg, #0a3d91, #1e5fe0)",
-    padding: "18px 16px 22px",
-    borderBottom: "1px solid rgba(15,23,42,0.08)",
-    boxShadow: "0 10px 24px rgba(15,23,42,0.18)",
-  },
-  bandInner: {
-    maxWidth: "1120px",
-    margin: "0 auto",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    gap: "18px",
-    flexWrap: "wrap",
-    color: "#f9fafb",
-  },
-  bandLabel: {
-    margin: 0,
-    fontSize: "11px",
-    textTransform: "uppercase",
-    letterSpacing: "0.16em",
-    color: "#bfdbfe",
-  },
-  title: {
-    margin: "4px 0 4px",
-    fontSize: "24px",
-    fontWeight: 800,
-    letterSpacing: "0.04em",
-    textTransform: "uppercase",
-    color: "#f9fafb",
-  },
-  subtitle: {
-    margin: 0,
-    fontSize: "13px",
-    color: "#e5e7eb",
-    opacity: 0.95,
-  },
-  userCard: {
-    padding: "10px 14px",
-    borderRadius: "16px",
-    backgroundColor: "rgba(15,23,42,0.92)",
-    border: "1px solid rgba(248,250,252,0.18)",
-    minWidth: "220px",
-    boxShadow: "0 12px 26px rgba(15,23,42,0.6)",
-  },
-  userRole: {
-    fontSize: "11px",
-    textTransform: "uppercase",
-    letterSpacing: "0.16em",
-    color: "#bfdbfe",
-    marginBottom: "2px",
-  },
-  userEmail: {
-    fontSize: "13px",
-    color: "#e5f2ff",
-    fontWeight: 600,
-  },
-  userHint: {
-    marginTop: "4px",
-    fontSize: "11px",
-    color: "#e5e7eb",
-    opacity: 0.9,
-  },
-  wrapper: {
-    maxWidth: "1120px",
-    margin: "0 auto",
-    padding: "22px 16px 40px",
-  },
-  cardsGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
-    gap: "14px",
-    marginBottom: "26px",
-  },
-  card: {
-    borderRadius: "18px",
-    padding: "16px 16px 14px",
-    backgroundColor: "#ffffff",
-    border: "1px solid rgba(15,23,42,0.06)",
-    boxShadow: "0 12px 24px rgba(15,23,42,0.08)",
-    color: "#0b1a33",
-  },
-  cardAccentRooms: {
-    boxShadow: "0 18px 32px rgba(37,99,235,0.18)",
-  },
-  cardAccentConfirmed: {
-    boxShadow: "0 18px 32px rgba(34,197,94,0.18)",
-  },
-  cardAccentPending: {
-    boxShadow: "0 18px 32px rgba(234,179,8,0.22)",
-  },
-  cardAccentRevenue: {
-    boxShadow: "0 18px 32px rgba(30,64,175,0.28)",
-  },
-  cardLabel: {
-    margin: 0,
-    marginBottom: "6px",
-    fontSize: "0.9rem",
-    color: "#6b7280",
-    opacity: 0.95,
-    fontWeight: 600,
-  },
-  metric: {
-    fontSize: "1.7rem",
-    fontWeight: 900,
-    color: "#0b1a33",
-    letterSpacing: "0.04em",
-  },
-  cardHint: {
-    marginTop: "8px",
-    fontSize: "0.8rem",
-    color: "#6b7280",
-    opacity: 0.9,
-  },
-  bottomRow: {
-    display: "grid",
-    gridTemplateColumns: "minmax(0, 2.2fr) minmax(0, 1.2fr)",
-    gap: "18px",
-  },
-  graphPanel: {
-    borderRadius: "20px",
-    border: "1px solid rgba(15,23,42,0.06)",
-    padding: "18px 18px 16px",
-    backgroundImage:
-      "radial-gradient(circle at top, rgba(148,163,253,0.18), transparent 55%), " +
-      "linear-gradient(145deg, #ffffff, #e8f1ff)",
-    boxShadow: "0 18px 40px rgba(15,23,42,0.10)",
-    color: "#0b1a33",
-  },
-  sidePanel: {
-    borderRadius: "20px",
-    border: "1px solid rgba(15,23,42,0.06)",
-    padding: "18px 18px 16px",
-    backgroundImage:
-      "radial-gradient(circle at top, rgba(191,219,254,0.3), transparent 55%), " +
-      "linear-gradient(145deg, #ffffff, #f5f7ff)",
-    boxShadow: "0 18px 40px rgba(15,23,42,0.10)",
-    color: "#0b1a33",
-  },
-  panelTitle: {
-    margin: 0,
-    marginBottom: "4px",
-    fontSize: "1rem",
-    fontWeight: 800,
-    color: "#0b1a33",
-  },
-  panelSubtitle: {
-    marginTop: "4px",
-    marginBottom: "14px",
-    fontSize: "0.85rem",
-    color: "#6b7280",
-    opacity: 0.95,
-  },
-  graphBlock: {
-    marginTop: "10px",
-    padding: "12px 12px 10px",
-    borderRadius: "14px",
-    backgroundColor: "#ffffff",
-    border: "1px solid rgba(15,23,42,0.06)",
-  },
-  graphHeaderRow: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    gap: "8px",
-  },
-  graphTitle: {
-    margin: 0,
-    fontSize: "0.95rem",
-    fontWeight: 700,
-    color: "#0b1a33",
-  },
-  graphTag: {
-    fontSize: "0.75rem",
-    padding: "4px 8px",
-    borderRadius: "999px",
-    backgroundColor: "rgba(22,163,74,0.08)",
-    color: "#166534",
-    fontWeight: 600,
-  },
-  graphTagMuted: {
-    fontSize: "0.75rem",
-    padding: "4px 8px",
-    borderRadius: "999px",
-    backgroundColor: "rgba(148,163,253,0.12)",
-    color: "#1e293b",
-    fontWeight: 500,
-  },
-  graphHint: {
-    marginTop: "4px",
-    marginBottom: "10px",
-    fontSize: "0.8rem",
-    color: "#6b7280",
-    opacity: 0.9,
-  },
-  legendRow: {
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-    marginBottom: "8px",
-    fontSize: "0.78rem",
-  },
-  legendDot: {
-    width: "9px",
-    height: "9px",
-    borderRadius: "999px",
-  },
-  legendDotConfirmed: {
-    backgroundColor: "#4ade80",
-  },
-  legendDotPending: {
-    backgroundColor: "#facc15",
-  },
-  legendLabel: {
-    color: "#4b5563",
-  },
-  barShell: {
-    width: "100%",
-    height: "24px",
-    borderRadius: "999px",
-    backgroundColor: "#e5edff",
-    border: "1px solid rgba(15,23,42,0.08)",
-    overflow: "hidden",
-    display: "flex",
-  },
-  barSegmentConfirmed: {
-    backgroundImage: "linear-gradient(135deg, #22c55e, #16a34a)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    fontSize: "0.7rem",
-    color: "#022c22",
-    fontWeight: 700,
-  },
-  barSegmentPending: {
-    backgroundImage: "linear-gradient(135deg, #facc15, #eab308)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    fontSize: "0.7rem",
-    color: "#451a03",
-    fontWeight: 700,
-  },
-  barLabel: {
-    padding: "0 6px",
-  },
-  revenueLabelRow: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    gap: "8px",
-    marginBottom: "6px",
-  },
-  revenueNow: {
-    fontSize: "0.8rem",
-    color: "#0b1a33",
-  },
-  revenuePercent: {
-    fontSize: "0.78rem",
-    color: "#0a3d91",
-    fontWeight: 600,
-  },
-  revenueBarShell: {
-    width: "100%",
-    height: "20px",
-    borderRadius: "999px",
-    backgroundColor: "#e5edff",
-    border: "1px solid rgba(15,23,42,0.08)",
-    overflow: "hidden",
-  },
-  revenueBarFill: {
-    height: "100%",
-    borderRadius: "999px",
-    backgroundImage: "linear-gradient(135deg, #0a3d91, #1e5fe0)",
-    boxShadow: "0 10px 22px rgba(37,99,235,0.45)",
-    transition: "width 0.3s ease",
-  },
-  locationBox: {
-    marginTop: "4px",
-    backgroundColor: "#ffffff",
-    borderRadius: "12px",
-    padding: "12px 12px",
-    fontSize: "0.9rem",
-    color: "#0b1a33",
-    border: "1px solid rgba(15,23,42,0.08)",
-  },
-  loadingText: {
-    fontSize: "0.85rem",
-    color: "#6b7280",
-  },
-  error: {
-    fontSize: "0.85rem",
-    color: "#b91c1c",
-    marginBottom: "8px",
-  },
 };
 
 export default ManagementOverview;

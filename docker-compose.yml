@@ -1,0 +1,18 @@
+services:
+  backend:
+    build: ./server
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./server/.env
+    restart: unless-stopped
+
+  frontend:
+    build: ./client
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./client/.env
+    depends_on:
+      - backend
+    restart: unless-stopped
