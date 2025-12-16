@@ -77,20 +77,17 @@ const Location = () => {
       </div>
 
       <div className="p-6">
-        <h3 className="text-xl font-bold mb-4">CruiseVoyage Headquarters</h3>
+        <h3 className="text-xl font-bold mb-4"> </h3>
         <div className="space-y-3">
           <div className="flex items-center">
             <span className="icon mr-3">📍</span>
-            <span>1234 Ocean Avenue, New York, NY 10001, USA</span>
+            <span>Oman</span>
           </div>
           <div className="flex items-center">
             <span className="icon mr-3">📞</span>
-            <span>+1 (555) 123-4567</span>
+            <span>9234567</span>
           </div>
-          <div className="flex items-center">
-            <span className="icon mr-3">✉️</span>
-            <span>info@cruisevoyage.com</span>
-          </div>
+          
         </div>
       </div>
     </div>
